@@ -1,0 +1,10 @@
+
+[Desktop Entry]
+Name=Serious Runner
+Type=Application
+Comment=A program that loads and runs content created by users for the game Serious Sam Classic.
+Exec=seriousrunner
+TryExec=seriousrunner
+Icon=seriousrunner
+Categories=Application;Game;
+Name[en_EN]=seriousrunner.desktop

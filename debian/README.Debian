@@ -1,0 +1,81 @@
+seriousrunner for Debian
+------------------------
+
+Serious Runner а small program that loads and runs content created by users for the game Serious Sam Classic.
+
+History of creation
+===================
+As you know, over the years since the game's release, users have created mods, additional maps, and map packs for Serious Sam. The game interface allows you to launch additional maps and modifications, but this is not implemented very conveniently. Maps and mods may contain Cyrillic names, which leads to incorrect display of characters, unless support for the corresponding language is installed in the game. In addition, users do not know where to get additional content for the game. I decided to write a program to simplify this process. More than 600 maps created by enthusiasts for single play were reviewed. About half of them were selected and posted on the Web Archive, and all information about them was entered into the SQL database. The goal was to select the best cards with beautiful design and interesting gameplay.
+
+Serious Runner allows you to download and run additional maps and mods created by enthusiasts. You can also add your own or other maps using the release form on github. After verification, the cards will be added to the SQL database.
+
+How the program works
+=====================
+When launched for the first time, the program checks for the presence of the database along the path:
+```
+~/.local/share/Serious-Runner/DB/seriousrunner.db
+```
+If the database is not installed, it will be searched in the home directory (or /usr/share/seriousrunner/DB depending on the installation type). Once the SQL database is found, it will be placed in the above path.
+
+Next, the program will notify you about the need to install the program and install the game data, and the main program window will open.
+
+The first thing to do is install the game. After clicking the Install Games button, the program will first download the latest release of the game from GitHub, unpack it into the /tmp directory and copy the contents along the path:
+```
+~/.local/share/Serious-Runner
+```
+Then, the program will download the settings and configuration files and place them there.
+As a result, we will have a local copy of the games located at the following paths:
+```
+~/.local/share/Serious-Runner/SamTFE
+~/.local/share/Serious-Runner/SamTSE
+```
+The second stage of installation is installing the game data to the above local paths.
+To do this, the game data must be unpacked in your home directory. If you purchased the game on Steam, then there is no need to place game data.
+After clicking the button Search and install game data, the program will find it and copy it to its local copy of the game, according to the paths indicated above. This completes the installation procedure.
+
+Dependencies
+============
+
+* `libarchive, liblzma, libQt5Gui, libQt5Core, libQt5Widgets, libQt5Sql, libQt5Network`
+
+To start the programm, you'll need the original resurces of a licensed copy of Serious Sam: The First Encounter and Serious Sam: The Second Encounter.
+
+Steam version 
+=============
+
+If you have a digital copy of the game on Steam then the resources can be found in 
+~/.local/share/Steam/SteamApps/common/Serious Sam Classic The Second Encounter/ (the default Steam game installation directory on Linux).
+
+
+GOG version
+===========
+If you bought a digital on GOG, you can unpack the resources with the innoextract CLI tool. To install innoextract via your package manager, run:
+ 
+sudo apt-get install innoextract
+
+Copy files "setup_serious_sam_the_first_encounter_2.0.0.10.exe" and "setup_serious_sam_the_second_encounter_2.1.0.8.exe" 
+to a home directory and run the following commands:
+
+innoextract --gog setup_serious_sam_the_first_encounter_2.0.0.10.exe
+
+innoextract --gog setup_serious_sam_the_second_encounter_2.1.0.8.exe
+
+Physical  version
+=================
+
+If you bought a physical copy of the game and you have an ISO of your disk, you can unpack the resources with the any archive manager. 
+Game resources are located in the Install directory of the disk. Just copy all content from to home directory.
+
+Launching the runner
+====================
+
+To start the game type in consolet:
+
+seriousrunner
+
+
+You can also use the launch of the runner through the menu.
+After installing the packagest.
+
+
+ -- Alexander <t.x00100x.t@yandex.ru>  Sun, 12 Sep 2023 20:33:46 +0300

@@ -1,0 +1,171 @@
+name: Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build-alpine-64:
+    name: Alpine ${{ matrix.Configuration }} ${{ matrix.Platform }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        Configuration: [Release]
+        Platform: [x86_64]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install latest stable Alpine Linux
+      uses: jirutka/setup-alpine@master
+      with:
+        arch: ${{ matrix.Platform }}
+        branch: 'latest-stable'
+        packages: build-base cmake xz sed zlib-dev qt5-qtbase-dev libarchive-dev xz-dev
+
+    - name: Get current date
+      id: date
+      uses: Kaven-Universe/github-action-current-date-time@v1
+      with:
+         format: "YYYYMMDD"
+
+    - name: Show current date
+      run: |
+        echo "${{ steps.date.outputs.time }}"
+ 
+    - name: Run Prepare
+      shell: alpine.sh {0}
+      run: |
+          cd ${{github.workspace}}
+          find . -name "CMakeLists.txt" -exec sed -i 's/-march=native/-mtune=generic/g' {} +
+          mkdir x64 && mkdir x64/Serious-Runner && mkdir x64/Serious-Runner/DB
+       
+    - name: Run Build 
+      shell: alpine.sh {0}
+      run: |
+          cd ${{github.workspace}}
+          CFLAGS="-w" CXXFLAGS="-w" cmake -B ${{github.workspace}}/build-x64 -DCMAKE_BUILD_TYPE=${{ matrix.Configuration }}
+          cd ${{github.workspace}}/build-x64
+          make -j$(nproc || echo 4)
+          ls -l
+          ls -l ${{github.workspace}}
+          cp -fr ${{github.workspace}}/build-x64/Serious-Runner ${{github.workspace}}/x64/Serious-Runner
+          cp -fr ${{github.workspace}}/DB/seriousrunner.db ${{github.workspace}}/x64/Serious-Runner/DB
+          cd ${{github.workspace}}
+          tar -cJpvf Serious-Runner-${{ steps.date.outputs.time }}-alpine-x86_64-bin.tar.xz x64
+          
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: Serious-Runner-${{ steps.date.outputs.time }}-alpine-x86_64-bin.tar.xz
+        path: Serious-Runner-${{ steps.date.outputs.time }}-alpine-x86_64-bin.tar.xz          
+
+  build-ubuntu-x64:
+    name: Ubuntu ${{ matrix.Configuration }} ${{ matrix.Platform }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        Configuration: [Release]
+        Platform: [x64]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install packages
+      run: |
+          sudo apt-get update -qq
+          sudo apt-get install -qq -y qtbase5-dev libarchive-dev liblzma-dev &&
+          sudo apt-get install -qq -y zlib1g-dev libxxhash-dev libarchive13  
+          
+    - name: Get current date
+      id: date
+      uses: Kaven-Universe/github-action-current-date-time@v1
+      with:
+         format: "YYYYMMDD"
+
+    - name: Show current date
+      run: |
+        echo "${{ steps.date.outputs.time }}"         
+
+    - name: Prepare
+      run: |
+          cd ${{github.workspace}}
+          find . -name "CMakeLists.txt" -exec sed -i 's/-march=native/-mtune=generic/g' {} +
+          mkdir {x64,x64/Serious-Runner,x64/Serious-Runner/DB}
+
+    - name: Run Build
+      run: |
+          cd ${{github.workspace}}
+          cmake -B ${{github.workspace}}/build-x64 -DCMAKE_BUILD_TYPE=${{ matrix.Configuration }}
+          cd ${{github.workspace}}/build-x64
+          make -j$(nproc || echo 4)
+          cp -fr ${{github.workspace}}/build-x64/Serious-Runner ${{github.workspace}}/x64/Serious-Runner
+          cp -fr ${{github.workspace}}/DB/seriousrunner.db ${{github.workspace}}/x64/Serious-Runner/DB
+          cd ${{github.workspace}}
+          tar -cJpvf Serious-Runner-${{ steps.date.outputs.time }}-lnx-amd64-bin.tar.xz x64
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: Serious-Runner-${{ steps.date.outputs.time }}-lnx-amd64-bin.tar.xz
+        path: Serious-Runner-${{ steps.date.outputs.time }}-lnx-amd64-bin.tar.xz 
+  
+  build-freebsd-x64:
+    name: FreeBSD ${{ matrix.Configuration }} ${{ matrix.Platform }}
+    runs-on: macos-12
+    strategy:
+      fail-fast: false
+      matrix:
+        Configuration: [Release]
+        Platform: [x64]    
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Get current date
+        id: date
+        uses: Kaven-Universe/github-action-current-date-time@v1
+        with:
+          format: "YYYYMMDD"
+
+      - name: Show current date
+        run: |
+          echo "${{ steps.date.outputs.time }}"
+          
+      - name: Build on FreeBSD
+        uses: cross-platform-actions/action@v0.10.0
+        with:
+          operating_system: freebsd
+          architecture: x86-64
+          version: '13.1'
+          shell: bash
+          run: |
+            uname -a
+            sudo pkg install -y libarchive lzma zlib-ng cmake qt5
+            cd ${{github.workspace}}
+            mkdir {x64,x64/Serious-Runner,x64/Serious-Runner/DB}
+            echo "*** Build ***"
+            awk '{sub("-march=native","-mtune=generic")}1' CMakeLists.txt > CmakeTemp.txt && mv CmakeTemp.txt CMakeLists.txt
+            cat CMakeLists.txt | grep mtune          
+            cmake -B ${{github.workspace}}/build-x64 -DCMAKE_BUILD_TYPE=${{ matrix.Configuration }}
+            cd ${{github.workspace}}/build-x64
+            make -j$(sysctl -n hw.ncpu || echo 4)
+         
+            echo "*** Prepare Archive ***"            
+            cd ${{github.workspace}}            
+            ls -l ${{github.workspace}}
+            ls -l ${{github.workspace}}
+            cp -fr ${{github.workspace}}/build-x64/Serious-Runner ${{github.workspace}}/x64/Serious-Runner
+            cp -fr ${{github.workspace}}/DB/seriousrunner.db ${{github.workspace}}/x64/Serious-Runner/DB
+            echo "*** Create archive ***"
+            XZ_DEFAULTS="-T 10" tar --use-compress-program=xz -cpvf Serious-Runner-${{ steps.date.outputs.time }}-bsd-amd64-bin.tar.xz x64
+                      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Serious-Runner-${{ steps.date.outputs.time }}-bsd-amd64-bin.tar.xz
+          path: Serious-Runner-${{ steps.date.outputs.time }}-bsd-amd64-bin.tar.xz

@@ -1,0 +1,60 @@
+name: Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:    
+
+  build-ubuntu-x64:
+    name: Ubuntu ${{ matrix.Configuration }} ${{ matrix.Platform }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        Configuration: [Release]
+        Platform: [x64]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install packages
+      run: |
+          sudo apt-get update -qq
+          sudo apt-get install -qq -y qtbase5-dev libarchive-dev liblzma-dev &&
+          sudo apt-get install -qq -y zlib1g-dev libxxhash-dev libarchive13  
+          
+    - name: Get current date
+      id: date
+      uses: Kaven-Universe/github-action-current-date-time@v1
+      with:
+         format: "YYYYMMDD"
+
+    - name: Show current date
+      run: |
+        echo "${{ steps.date.outputs.time }}"         
+
+    - name: Prepare
+      run: |
+          cd ${{github.workspace}}
+          find . -name "CMakeLists.txt" -exec sed -i 's/-march=native/-mtune=generic/g' {} +
+          mkdir {x64,x64/Serious-Runner,x64/Serious-Runner/DB}
+
+    - name: Run Build
+      run: |
+          cd ${{github.workspace}}
+          cmake -B ${{github.workspace}}/build-x64 -DCMAKE_BUILD_TYPE=${{ matrix.Configuration }}
+          cd ${{github.workspace}}/build-x64
+          make -j$(nproc || echo 4)
+          cp -fr ${{github.workspace}}/build-x64/Serious-Runner ${{github.workspace}}/x64/Serious-Runner
+          cp -fr ${{github.workspace}}/DB/seriousrunner.db ${{github.workspace}}/x64/Serious-Runner/DB
+          cd ${{github.workspace}}
+          tar -cJpvf Serious-Runner-${{ steps.date.outputs.time }}-lnx-amd64-bin.tar.xz x64
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: Serious-Runner-${{ steps.date.outputs.time }}-lnx-amd64-bin.tar.xz
+        path: Serious-Runner-${{ steps.date.outputs.time }}-lnx-amd64-bin.tar.xz 
