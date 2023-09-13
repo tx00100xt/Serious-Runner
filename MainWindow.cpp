@@ -659,7 +659,7 @@ void MainWindow::RequestFileSize(const QString &url)
     req.setUrl(QUrl(url));
     req.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
     m_reply = m_netmanager->get(req);
-    connect(m_reply, SIGNAL(metaDataChanged()), this, SLOT(fileSize()));
+    connect(m_reply, SIGNAL(metaDataChanged()), this, SLOT(FileSize()));
 }
 
 void MainWindow::FileSize()
