@@ -81,7 +81,7 @@ Screenshots of the program
 
 Releases
 --------
-You can download the finished [release] for Linux, Alpine Linux(muscle) and FreeBSD on the releases page:
+You can download the finished [release] for Linux, Alpine Linux(musl) and FreeBSD on the releases page:
 
 Just unpack the archive in any location convenient for you in your home directory. The only condition is the presence of game data for the games Serious Sam Classic The First Encounter and Serious Sam Classic The Second in the home directory, the program will do the rest itself.
 
