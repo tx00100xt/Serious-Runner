@@ -41,10 +41,20 @@ Dependencies
 
 * `libarchive, liblzma, libQt5Gui, libQt5Core, libQt5Widgets, libQt5Sql, libQt5Network`
   
-For example, to build from Ubuntu, run the commands:
+For example, to build from Ubuntu/Debian, run the commands:
 ```
 sudo apt update
-sudo apt install qbuild-essential cmake qtbase5-dev libarchive-dev liblzma-dev zlib1g-dev libarchive13
+sudo apt install build-essential cmake qtbase5-dev libarchive-dev liblzma-dev libbz2-dev zlib1g-dev
+```
+For build from ALT Linux:
+```
+sudo apt-get update
+sudo apt-get install qt5-base-devel libarchive-devel liblzma-devel bzip2-devel zlib-devel
+```
+For run from ALT Linux:
+```
+sudo apt-get update
+sudo apt-get install qt5-base-common libarchive liblzma bzip2 zlib
 ```
 
 Building
