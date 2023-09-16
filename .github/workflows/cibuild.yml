@@ -51,8 +51,6 @@ jobs:
           CFLAGS="-w" CXXFLAGS="-w" cmake -B ${{github.workspace}}/build-x64 -DCMAKE_BUILD_TYPE=${{ matrix.Configuration }}
           cd ${{github.workspace}}/build-x64
           make -j$(nproc || echo 4)
-          ls -l
-          ls -l ${{github.workspace}}
           cp -fr ${{github.workspace}}/build-x64/Serious-Runner ${{github.workspace}}/x64/Serious-Runner
           cp -fr ${{github.workspace}}/DB/seriousrunner.db ${{github.workspace}}/x64/Serious-Runner/DB
           cd ${{github.workspace}}
@@ -157,8 +155,6 @@ jobs:
          
             echo "*** Prepare Archive ***"            
             cd ${{github.workspace}}            
-            ls -l ${{github.workspace}}
-            ls -l ${{github.workspace}}
             cp -fr ${{github.workspace}}/build-x64/Serious-Runner ${{github.workspace}}/x64/Serious-Runner
             cp -fr ${{github.workspace}}/DB/seriousrunner.db ${{github.workspace}}/x64/Serious-Runner/DB
             echo "*** Create archive ***"
