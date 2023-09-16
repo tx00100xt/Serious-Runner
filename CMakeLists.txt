@@ -11,19 +11,30 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+include(CheckCXXCompilerFlag)
+
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 find_package(Qt5Sql REQUIRED)
 find_package(Qt5 COMPONENTS Network REQUIRED)
-if(CMAKE_VERSION VERSION_GREATER 3.17.0)
-    include(FindLibArchive)
-endif()
+
 include(FindLibLZMA)
 include(FindBZip2)
 include(FindZLIB)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
-include(CheckCXXCompilerFlag)
+if(CMAKE_VERSION VERSION_GREATER 3.17.0)
+    include(FindLibArchive)
+else()
+   option(CMAKE_USE_SYSTEM_LIBARCHIVE "Use system-installed libarchive" "On")
+   # Build or use system libarchive for CMake and CTest.
+   if(CMAKE_USE_SYSTEM_LIBARCHIVE)
+     find_package(LibArchive 3.0.1)
+     if(NOT LibArchive_FOUND)
+       message(FATAL_ERROR "CMAKE_USE_SYSTEM_LIBARCHIVE is ON but LibArchive is not found!")
+     endif()
+   endif()
+endif()
 
 set(INTERNAL_NAME "seriousrunner")
 
@@ -34,7 +45,7 @@ if(CMAKE_INSTALL_PREFIX STREQUAL "/usr/local" OR CMAKE_INSTALL_PREFIX STREQUAL "
     set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/")                               # set install path to project root directory since
                                                                                    # since one wasn't set during config
     set(LOCAL_INSTALL TRUE)
-    message(STATUS "Using LOCAL Imstall")
+    message(STATUS "Using LOCAL Install")
 endif()
 
 if(CMAKE_INSTALL_PREFIX STREQUAL "/usr" ) # Only works for linux since I don't know what default is for windows/macos/freebsd.
@@ -286,12 +297,9 @@ else()
 endif()
 
 # Link libraries.
-if(CMAKE_VERSION VERSION_LESS 3.17.0)
-set_target_properties(Serious-Runner PROPERTIES LINK_FLAGS "-larchive")
-target_link_libraries(Serious-Runner PRIVATE Qt${QT_VERSION_MAJOR}::Widgets  Qt5::Sql Qt5::Network LibLZMA::LibLZMA BZip2::BZip2 ZLIB::ZLIB)
-else()
+
 target_link_libraries(Serious-Runner PRIVATE Qt${QT_VERSION_MAJOR}::Widgets  Qt5::Sql Qt5::Network LibArchive::LibArchive LibLZMA::LibLZMA BZip2::BZip2 ZLIB::ZLIB)
-endif()
+
 set_target_properties(Serious-Runner PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
