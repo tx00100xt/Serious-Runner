@@ -151,13 +151,14 @@ void MainWindow::SetVars(){
     ui->comboBox_fe_mods_difficulty->hide();
     ui->comboBox_se_mods_difficulty->hide();
     GetDistroFlag();
+    SetComboBoxText();
 }
 
 // Get Disto name and set flag for SQl download table
 void MainWindow::GetDistroFlag()
 {
     QString strOS=exec("cat /etc/*release|grep NAME");
-    //MsgBox(INFO, strOS);
+    // MsgBox(INFO, strOS); // For Debug
 
     // Set Distro flag
     if(strOS.contains("FreeBSD")) {
@@ -169,7 +170,30 @@ void MainWindow::GetDistroFlag()
     }else{
         iDistoFlag = OTHER;
     }
-    //MsgBox(INFO, QString::number(iDistoFlag));
+    // MsgBox(INFO, QString::number(iDistoFlag)); // For Debug
+}
+
+// Set combo box text on center, because on Arch linux we have bug with text on combobox
+void MainWindow::SetComboBoxText()
+{
+    QString strCcomboBoxName;
+    for (int i = 0 ; i < 9 ; ++i) {
+        // Example: comboBox_fe_official_difficulty
+        strCcomboBoxName = "comboBox_" +strTablesMiddleNames[i] + "_difficulty";
+        MainWindow::findChild<QComboBox*>(strCcomboBoxName)->clear();
+        MainWindow::findChild<QComboBox*>(strCcomboBoxName)->setEditable(true);
+        MainWindow::findChild<QComboBox*>(strCcomboBoxName)->lineEdit()->setReadOnly(true);
+        MainWindow::findChild<QComboBox*>(strCcomboBoxName)->lineEdit()->setAlignment(Qt::AlignCenter);
+        MainWindow::findChild<QComboBox*>(strCcomboBoxName)->addItem("Tourist");
+        MainWindow::findChild<QComboBox*>(strCcomboBoxName)->addItem("Easy");
+        MainWindow::findChild<QComboBox*>(strCcomboBoxName)->addItem("Normal");
+        MainWindow::findChild<QComboBox*>(strCcomboBoxName)->addItem("Hard");
+        MainWindow::findChild<QComboBox*>(strCcomboBoxName)->addItem("Serious");
+        // MsgBox(INFO,strCcomboBoxName);// For Debug
+        for (int j = 0 ; j <  MainWindow::findChild<QComboBox*>(strCcomboBoxName)->count() ; ++j) {
+            MainWindow::findChild<QComboBox*>(strCcomboBoxName)->setItemData(j, Qt::AlignCenter, Qt::TextAlignmentRole);
+        }
+    }
 }
 
 // Test DB update need?

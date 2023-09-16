@@ -19,6 +19,7 @@
 #include <QMenu>
 #include <QCloseEvent>
 #include <QSystemTrayIcon>
+#include <QLineEdit>
 #include "Classes/Downloader.h"
 #include "Classes/FindInHomeDir.h"
 #include <cstdio>
@@ -184,6 +185,7 @@ private:
     void  FE_UseXPLUS(int arg, int iTable, bool bInstalled);
     void  SE_UseXPLUS(int arg, int iTable, bool bInstalled);
     void  GetDistroFlag();
+    void  SetComboBoxText();
     QString exec(const char* cmd);
 
     // Used classes and vars
@@ -235,6 +237,8 @@ private:
 
     // DB tables for Status scan
     QString strDBTablesForScan[7]   = {"fe_bestmaps", "fe_usersmaps", "fe_mods", "se_bestmaps", "se_hqmaps", "se_usersmaps", "se_mods"};
+    // Tables middle Names
+    QString strTablesMiddleNames[9] = {"fe_official", "fe_bestmaps", "fe_usersmaps", "fe_mods", "se_official", "se_bestmaps", "se_hqmaps", "se_usersmaps", "se_mods"};
 
     // Games gro files
     QString strFEfiles[6] {"1_00c.gro", "1_00c_Logo.gro", "1_00c_scripts.gro", "1_00_ExtraTools.gro", "1_00_music.gro", "1_04_patch.gro"};

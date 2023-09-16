@@ -1100,7 +1100,7 @@
          <string>Start level</string>
         </property>
        </widget>
-       <widget class="QComboBox" name="comboBox_fe_usersmap_difficulty">
+       <widget class="QComboBox" name="comboBox_fe_usersmaps_difficulty">
         <property name="geometry">
          <rect>
           <x>250</x>
