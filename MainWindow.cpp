@@ -538,6 +538,7 @@ void MainWindow::on_pushButton_install_clicked()
         MsgBox(INFO, "Game already installed");
         return;
     }
+    if(m_downloader.locked_action) {return;}
 
     // Get download link from sql
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
