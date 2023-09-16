@@ -63,7 +63,7 @@
        <normaloff>:/Icons/samfe.png</normaloff>:/Icons/samfe.png</iconset>
      </attribute>
      <attribute name="title">
-      <string>Serious Sam Classic The First Encounter</string>
+      <string>Serious Sam First Encounter</string>
      </attribute>
      <widget class="QTabWidget" name="tabWidget_internal_fe">
       <property name="geometry">
@@ -92,6 +92,9 @@
           <width>620</width>
           <height>500</height>
          </rect>
+        </property>
+        <property name="horizontalScrollBarPolicy">
+         <enum>Qt::ScrollBarAlwaysOff</enum>
         </property>
         <property name="alternatingRowColors">
          <bool>true</bool>
@@ -1510,7 +1513,7 @@
        <normaloff>:/Icons/samse.png</normaloff>:/Icons/samse.png</iconset>
      </attribute>
      <attribute name="title">
-      <string>Serious Sam Classic The Second Encounter</string>
+      <string>Serious Sam Second Encounter</string>
      </attribute>
      <widget class="QTabWidget" name="tabWidget_internal_se">
       <property name="geometry">
@@ -1539,6 +1542,9 @@
           <width>620</width>
           <height>500</height>
          </rect>
+        </property>
+        <property name="horizontalScrollBarPolicy">
+         <enum>Qt::ScrollBarAlwaysOff</enum>
         </property>
         <property name="alternatingRowColors">
          <bool>true</bool>
