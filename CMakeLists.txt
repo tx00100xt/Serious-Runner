@@ -15,7 +15,9 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 find_package(Qt5Sql REQUIRED)
 find_package(Qt5 COMPONENTS Network REQUIRED)
-include(FindLibArchive)
+if(CMAKE_VERSION VERSION_GREATER 3.17.0)
+    include(FindLibArchive)
+endif()
 include(FindLibLZMA)
 include(FindBZip2)
 include(FindZLIB)
@@ -284,9 +286,12 @@ else()
 endif()
 
 # Link libraries.
-
+if(CMAKE_VERSION VERSION_LESS 3.17.0)
+set_target_properties(Serious-Runner PROPERTIES LINK_FLAGS "-larchive")
+target_link_libraries(Serious-Runner PRIVATE Qt${QT_VERSION_MAJOR}::Widgets  Qt5::Sql Qt5::Network LibLZMA::LibLZMA BZip2::BZip2 ZLIB::ZLIB)
+else()
 target_link_libraries(Serious-Runner PRIVATE Qt${QT_VERSION_MAJOR}::Widgets  Qt5::Sql Qt5::Network LibArchive::LibArchive LibLZMA::LibLZMA BZip2::BZip2 ZLIB::ZLIB)
-
+endif()
 set_target_properties(Serious-Runner PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
