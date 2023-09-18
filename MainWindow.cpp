@@ -1301,7 +1301,7 @@ void MainWindow::on_comboBox_fe_bestmaps_difficulty_currentIndexChanged(int inde
     iFE_StartWithDifficulty[FE_BESTMAPS]  = index;
 }
 
-void MainWindow::on_comboBox_fe_usersmap_difficulty_currentIndexChanged(int index)
+void MainWindow::on_comboBox_fe_usersmaps_difficulty_currentIndexChanged(int index)
 {
     iFE_StartWithDifficulty[FE_USERSMAPS]  = index;
 }

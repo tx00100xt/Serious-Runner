@@ -141,7 +141,7 @@ private slots:
     // Difficulity combobox slots
     void on_comboBox_fe_official_difficulty_currentIndexChanged(int index);
     void on_comboBox_fe_bestmaps_difficulty_currentIndexChanged(int index);
-    void on_comboBox_fe_usersmap_difficulty_currentIndexChanged(int index);
+    void on_comboBox_fe_usersmaps_difficulty_currentIndexChanged(int index);
     void on_comboBox_fe_mods_difficulty_currentIndexChanged(int index);
     void on_comboBox_se_official_difficulty_currentIndexChanged(int index);
     void on_comboBox_se_bestmaps_difficulty_currentIndexChanged(int index);

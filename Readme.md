@@ -39,8 +39,9 @@ After clicking the button Search and install game data, the program will find it
 Dependencies
 ------------
 
-* `libarchive, liblzma, libQt5Gui, libQt5Core, libQt5Widgets, libQt5Sql, libQt5Network`
-  
+* `libQt5Gui, libQt5Core, libQt5Widgets, libQt5Sql, libQt5Network`
+* `cmake >=3.14, glibc >=2.24, zlib, bzip2, libarchive, liblzma`
+
 For example, to build from Ubuntu/Debian, run the commands:
 ```
 sudo apt update

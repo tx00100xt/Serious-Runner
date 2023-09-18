@@ -2,6 +2,7 @@
 #define DOWNLOADER_H
 
 #include <QMessageBox>
+#include <QUrl>
 #include <QNetworkAccessManager>
 #include "Classes/Unpacker.h"
 #include "Classes/CopyDir.h"
