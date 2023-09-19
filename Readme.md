@@ -110,9 +110,18 @@ deb-src https://ppa.launchpadcontent.net/tx00100xt/serioussamclassic/ubuntu vers
 ```
 Where version: jammy, lunar, mantic. 
 
-### Arch Linux  Users
+### Arch Linux Users
 To build a Serious Runner under Arch Linux you can use the package from AUR: https://aur.archlinux.org/packages/seriousrunner
 You can download the **zst** package file for installation on the system on the [release] page.
+
+### Gentoo Users
+To build a Serious Runner for gentoo, use a https://github.com/gentoo-mirror/serioussam overlay containing ready-made ebuilds for building the Serious Runner.
+Type this in your terminal:
+```
+eselect repository enable serioussam
+emaint sync --repo serioussam
+emerge -av seriousrunner --autounmask=y
+```
 
 ### Build status
 |CI|Platform|Compiler|Configurations|Platforms|Status|
