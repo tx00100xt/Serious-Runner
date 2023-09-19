@@ -108,7 +108,11 @@ This PPA can be added to your system manually by copying the lines below and add
 deb https://ppa.launchpadcontent.net/tx00100xt/serioussamclassic/ubuntu version main 
 deb-src https://ppa.launchpadcontent.net/tx00100xt/serioussamclassic/ubuntu version main  
 ```
-Where version: jammy, lunar, mantic.   
+Where version: jammy, lunar, mantic. 
+
+### Arch Linux  Users
+To build a Serious Runner under Arch Linux you can use the package from AUR: https://aur.archlinux.org/packages/seriousrunner
+You can download the **zst** package file for installation on the system on the [release] page.
 
 ### Build status
 |CI|Platform|Compiler|Configurations|Platforms|Status|
