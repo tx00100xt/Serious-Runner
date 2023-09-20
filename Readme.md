@@ -93,6 +93,12 @@ Screenshots of the program
 
 ![Serious Runner png3](https://raw.githubusercontent.com/tx00100xt/Serious-Runner/main/Picturies/3.png)
 
+![Serious Runner png1](https://raw.githubusercontent.com/tx00100xt/Serious-Runner/main/Picturies/4.png)
+
+![Serious Runner png2](https://raw.githubusercontent.com/tx00100xt/Serious-Runner/main/Picturies/5.png)
+
+![Serious Runner png3](https://raw.githubusercontent.com/tx00100xt/Serious-Runner/main/Picturies/6.png)
+
 Releases
 --------
 You can download the finished [release] for Linux, Alpine Linux(musl) and FreeBSD on the releases page:
