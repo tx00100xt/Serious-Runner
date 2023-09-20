@@ -81,9 +81,6 @@ su
 make install
 exit
 ``` 
-Themes
-------
-Themes are based on https://github.com/GTRONICK/QSS published under the MIT license. See Serious-Runner/Themes/LICENSE
 
 Screenshots of the program
 --------------------------
@@ -194,11 +191,16 @@ Supported OS
 
 Plans
 -----
-* `There are no plans.`
-  
+* `There are no plans`
+
+Themes
+------
+* `Themes are based on` https://github.com/GTRONICK/QSS `published under the` [MIT license].
+
 License
 -------
 * `Serious Runner licensed under the GNU GPL v2 (see LICENSE file).`
 
 [Actions tab]: https://github.com/tx00100xt/Serious-Runner/actions "Download Artifacts"
 [release]: https://github.com/tx00100xt/Serious-Runner/releases "Download Release"
+[MIT license]: https://github.com/tx00100xt/Serious-Runner/blob/main/Themes/LICENSE "MIT license"
