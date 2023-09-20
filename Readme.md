@@ -81,6 +81,9 @@ su
 make install
 exit
 ``` 
+Themes
+------
+Themes are based on https://github.com/GTRONICK/QSS published under the MIT license. See Serious-Runner/Themes/LICENSE
 
 Screenshots of the program
 --------------------------

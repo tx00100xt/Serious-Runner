@@ -150,7 +150,7 @@ private slots:
     void on_comboBox_se_mods_difficulty_currentIndexChanged(int index);
 
     // Cancel download
-    void on_pushButton_add_user_map_clicked();
+    // void on_pushButton_add_user_map_clicked();
     void on_pushButton_fe_bestmaps_download_cancel_clicked();
     void on_pushButton_fe_usersmap_download_cancel_clicked();
     void on_pushButton_fe_mods_download_cancel_clicked();
@@ -158,6 +158,9 @@ private slots:
     void on_pushButton_se_hqmaps_download_cancel_clicked();
     void on_pushButton_se_usersmaps_download_cancel_clicked();
     void on_pushButton_se_mods_download_cancel_clicked();
+
+    // Themes change
+    void on_comboBox_themes_currentIndexChanged(int index);
 
 private:
     // ui
@@ -219,6 +222,7 @@ private:
     bool bCloseFromTray             = false;
     bool bUpdateDB                  = false;
     int  iDistoFlag                 = 0;
+    int  iTheme                     = 0;
 
     // Indexes for tables and progress bar
     int iTableRowIndex;

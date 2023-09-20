@@ -150,7 +150,23 @@ void MainWindow::SetVars(){
     // !!! Comment it out if you want to run mods bypassing the menu
     ui->comboBox_fe_mods_difficulty->hide();
     ui->comboBox_se_mods_difficulty->hide();
+    // get os flag (by name)
     GetDistroFlag();
+    // get saved theme
+    QString strTheme;
+    QString strFileName = strRunnerDirPath +"/Theme.ini";
+    QFile inputFile(strFileName);
+    if (inputFile.open(QIODevice::ReadOnly))
+    {
+       QTextStream in(&inputFile);
+       while (!in.atEnd())
+       {
+          strTheme = in.readLine();
+       }
+       inputFile.close();
+       iTheme = strTheme.toInt();
+    }
+    // set combo box
     SetComboBoxText();
 }
 
@@ -184,6 +200,8 @@ void MainWindow::SetComboBoxText()
         MainWindow::findChild<QComboBox*>(strCcomboBoxName)->setEditable(true);
         MainWindow::findChild<QComboBox*>(strCcomboBoxName)->lineEdit()->setReadOnly(true);
         MainWindow::findChild<QComboBox*>(strCcomboBoxName)->lineEdit()->setAlignment(Qt::AlignCenter);
+        MainWindow::findChild<QComboBox*>(strCcomboBoxName)->lineEdit()->setFont(QFont ("Sans Serif", 12));
+        MainWindow::findChild<QComboBox*>(strCcomboBoxName)->setFont(QFont ("Sans Serif", 12));
         MainWindow::findChild<QComboBox*>(strCcomboBoxName)->addItem("Tourist");
         MainWindow::findChild<QComboBox*>(strCcomboBoxName)->addItem("Easy");
         MainWindow::findChild<QComboBox*>(strCcomboBoxName)->addItem("Normal");
@@ -194,6 +212,27 @@ void MainWindow::SetComboBoxText()
             MainWindow::findChild<QComboBox*>(strCcomboBoxName)->setItemData(j, Qt::AlignCenter, Qt::TextAlignmentRole);
         }
     }
+    // Create themes combo box
+    ui->comboBox_themes->clear();
+    ui->comboBox_themes->setEditable(true);
+    ui->comboBox_themes->lineEdit()->setReadOnly(true);
+    ui->comboBox_themes->lineEdit()->setAlignment(Qt::AlignCenter);
+    ui->comboBox_themes->lineEdit()->setFont(QFont ("Sans Serif", 12));
+    ui->comboBox_themes->setFont(QFont ("Sans Serif", 12));
+    // themes
+    ui->comboBox_themes->addItem("Default");
+    ui->comboBox_themes->addItem("Amoled");
+    ui->comboBox_themes->addItem("Aqua.");
+    ui->comboBox_themes->addItem("ConsoleStyle");
+    ui->comboBox_themes->addItem("ElegantDark");
+    ui->comboBox_themes->addItem("MacOS");
+    ui->comboBox_themes->addItem("ManjaroMix");
+    ui->comboBox_themes->addItem("MaterialDark");
+    ui->comboBox_themes->addItem("NeonButtons");
+    ui->comboBox_themes->addItem("Ubuntu");
+    ui->comboBox_themes->setCurrentIndex(iTheme);
+    // set theme
+    on_comboBox_themes_currentIndexChanged(iTheme);
 }
 
 // Test DB update need?
@@ -1401,11 +1440,69 @@ void MainWindow::on_checkBox_se_usersmaps_use_xplus_stateChanged(int arg)
 // ********************************************************************************************
 // *********************************** Add user map slot **************************************
 // ********************************************************************************************
+void MainWindow::on_comboBox_themes_currentIndexChanged(int index)
+{
+    QString strTheme;
+    switch(index)
+    {
+        case DEFAULTTHEME:
+          window()->setStyleSheet(""); //return;
+          break;
+        case AMOLED:
+          strTheme = ":/Themes/AMOLED.qss";
+          break;
+        case AQUA:
+          strTheme = ":/Themes/Aqua.qss";
+          break;
+        case CONSOLESTYLE:
+          strTheme = ":/Themes/ConsoleStyle.qss";
+          break;
+        case ELEGANTDARK:
+          strTheme = ":/Themes/ElegantDark.qss";
+          break;
+        case MACOSTHEME:
+          strTheme = ":/Themes/MacOS.qss";
+          break;
+        case MANJAROMIX:
+          strTheme = ":/Themes/ManjaroMix.qss";
+          break;
+        case MATERIALDARKE:
+          strTheme = ":/Themes/MaterialDark.qss";
+          break;
+        case NEONBUTTONS:
+          strTheme = ":/Themes/NeonButtons.qss";
+          break;
+        case UBUNTUTHEME:
+          strTheme = ":/Themes/Ubuntu.qss";
+          break;
+        default:
+          window()->setStyleSheet(""); //return;
+          break;
+    }
+    // set theme
+    if(index != 0){
+        QFile file(strTheme);
+        if(file.open(QIODevice::ReadOnly | QIODevice::Text))
+        {
+            window()->setStyleSheet(file.readAll());
+            file.close();
+        }
+    }
+    QString filename = strRunnerDirPath + "/Theme.ini";
+    QFile file(filename);
+    if (file.open(QIODevice::ReadWrite)) {
+        QTextStream stream(&file);
+        stream << QString::number(index) << Qt::endl;
+    }
+    file.close();
+}
 
+/*
 void MainWindow::on_pushButton_add_user_map_clicked()
 {
     QDesktopServices::openUrl(QUrl("https://github.com/tx00100xt/Serious-Runner/issues", QUrl::TolerantMode));
 }
+*/
 
 // ********************************************************************************************
 // *************************************** Message Box ****************************************
@@ -1464,3 +1561,4 @@ QString MainWindow::exec(const char* cmd)
 // ********************************************************************************************
 // ************************************** The End *********************************************
 // ********************************************************************************************
+

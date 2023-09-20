@@ -13,5 +13,19 @@
         <file>Icons/samse.png</file>
         <file>Icons/seriousrunner.png</file>
         <file>Icons/serious-sam-logo.png</file>
+        <file>Themes/AMOLED.qss</file>
+        <file>Themes/Aqua.qss</file>
+        <file>Themes/ConsoleStyle.qss</file>
+        <file>Themes/ElegantDark.qss</file>
+        <file>Themes/MacOS.qss</file>
+        <file>Themes/ManjaroMix.qss</file>
+        <file>Themes/MaterialDark.qss</file>
+        <file>Themes/NeonButtons.qss</file>
+        <file>Themes/Ubuntu.qss</file>
+        <file>Themes/QSS_IMG/go-down-symbolic.symbolic.png</file>
+        <file>Themes/QSS_IMG/go-next-symbolic.symbolic.png</file>
+        <file>Themes/QSS_IMG/go-previous-symbolic.symbolic.png</file>
+        <file>Themes/QSS_IMG/go-up-symbolic.symbolic.png</file>
+        <file>Themes/QSS_IMG/object-select-symbolic.symbolic.png</file>
     </qresource>
 </RCC>
