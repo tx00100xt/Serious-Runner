@@ -202,6 +202,14 @@ QWidget
 {
 	background-color:rgb(82, 82, 82);
 }
+QHeaderView::section 
+{
+	background-color:  black;
+	color: silver;
+}
+QTableCornerButton::section {
+	background-color: black;
+}
 QTableView
 {
 	/* alternate-background-color: #474A51; */

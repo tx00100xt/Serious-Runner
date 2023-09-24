@@ -578,6 +578,14 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
 	Added for Serious Runner project 
 	********************************
 */
+QHeaderView::section 
+{
+	background-color:  black;
+	color: silver;
+}
+QTableCornerButton::section {
+	background-color: black;
+}
 QTableView
 {
 	alternate-background-color: #1F1F1F;
@@ -607,7 +615,7 @@ QTableView::indicator:checked {
 	width: 7px;
 	height: 7px;
 	margin: 0px 5px 0 5px;
-} 
+}
 QWidget
 {
 	color: silver;

@@ -26,6 +26,14 @@ QTabWidget::pane {
 	Added for Serious Runner project 
 	********************************
 */
+QHeaderView::section 
+{
+	background-color:  black;
+	color: silver;
+}
+QTableCornerButton::section {
+    background-color: black;
+}
 QTableView
 {
 	/* alternate-background-color: #474A51; */
