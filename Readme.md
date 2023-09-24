@@ -81,6 +81,35 @@ make install
 exit
 ``` 
 
+It is assumed that you have a deployed development environment that includes **Qt5, MinGW-w64, CMake, OpenSSL** 64-bit.
+You can find documentation on the deployment of this environment on the Internet. Using this environment you need to build the following libraries from source code:
+
+- zlib
+- bzip2
+- xz-utils (You can download a ready-made dev-build from the project page)
+- libarchive
+
+You need to place the resulting libraries and header files in:
+```
+"C:/Program Files/GnuWin32/lib"
+"C:/Program Files/GnuWin32/include"
+```
+You can take ready-made libraries and header files from the **GnuWin** project directory.
+Once everything is ready, open the powershell and run the commands:
+```
+git clone https://github.com/tx00100xt/Serious-Runner.git
+cd Serious-Runner
+mkdir build && cd build
+cmake -G "MinGW Makefiles" ..
+mingw32-make
+```
+If everything is done correctly you will get the following output:
+
+![Serious Runner makepng](https://raw.githubusercontent.com/tx00100xt/Serious-Runner/main/Picturies/make.png)
+
+After receiving the original executable file, add the necessary libraries and plugins to the program directory.
+As examples, you can take the desired list from the [release] for Windows.
+
 Screenshots of the program
 --------------------------
 ![Serious Runner png1](https://raw.githubusercontent.com/tx00100xt/Serious-Runner/main/Picturies/1.png)
@@ -89,11 +118,11 @@ Screenshots of the program
 
 ![Serious Runner png3](https://raw.githubusercontent.com/tx00100xt/Serious-Runner/main/Picturies/3.png)
 
-![Serious Runner png1](https://raw.githubusercontent.com/tx00100xt/Serious-Runner/main/Picturies/4.png)
+![Serious Runner png4](https://raw.githubusercontent.com/tx00100xt/Serious-Runner/main/Picturies/4.png)
 
-![Serious Runner png2](https://raw.githubusercontent.com/tx00100xt/Serious-Runner/main/Picturies/5.png)
+![Serious Runner png5](https://raw.githubusercontent.com/tx00100xt/Serious-Runner/main/Picturies/5.png)
 
-![Serious Runner png3](https://raw.githubusercontent.com/tx00100xt/Serious-Runner/main/Picturies/6.png)
+![Serious Runner png6](https://raw.githubusercontent.com/tx00100xt/Serious-Runner/main/Picturies/6.png)
 
 Releases
 --------
@@ -187,6 +216,7 @@ Supported OS
 * `Linux (glibc)`
 * `Alpine Linux (musl)`
 * `FreeBSD`
+* `Windows`
 
 Plans
 -----
