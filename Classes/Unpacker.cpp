@@ -58,7 +58,7 @@ void Unpacker::Extract(QString strFileName, QString strPath, int iDoExtract, int
     if (chrFilename != NULL && strcmp(chrFilename, "-") == 0)
         chrFilename = NULL;
     if ((r = archive_read_open_filename(a, chrFilename, 10240))) {
-        MsgBox(ERROR, QString::fromLocal8Bit(archive_error_string(a)));
+        MsgBox(ERR, QString::fromLocal8Bit(archive_error_string(a)));
         return;
     }
     for (;;) {
@@ -66,7 +66,7 @@ void Unpacker::Extract(QString strFileName, QString strPath, int iDoExtract, int
         if (r == ARCHIVE_EOF)
             break;
         if (r != ARCHIVE_OK) {
-            MsgBox(ERROR, QString::fromLocal8Bit(archive_error_string(a)));
+            MsgBox(ERR, QString::fromLocal8Bit(archive_error_string(a)));
             return;
         }
 
@@ -81,7 +81,7 @@ void Unpacker::Extract(QString strFileName, QString strPath, int iDoExtract, int
             archive_entry_set_pathname(entry, (const char*)chrPathWithFile);
             r = archive_write_header(ext, entry);
             if (r != ARCHIVE_OK) {
-                MsgBox(ERROR, QString::fromLocal8Bit(archive_error_string(a)));
+                MsgBox(ERR, QString::fromLocal8Bit(archive_error_string(a)));
             }
             else {
                 r = CopyData(a, ext);
@@ -110,12 +110,12 @@ int Unpacker::CopyData(struct archive *ar, struct archive *aw)
         if (r == ARCHIVE_EOF)
             return (ARCHIVE_OK);
         if (r != ARCHIVE_OK) {
-            MsgBox(ERROR, QString::fromLocal8Bit(archive_error_string(ar)));
+            MsgBox(ERR, QString::fromLocal8Bit(archive_error_string(ar)));
             return (r);
         }
         r = archive_write_data_block(aw, buff, size, offset);
         if (r != ARCHIVE_OK) {
-            MsgBox(ERROR, QString::fromLocal8Bit(archive_error_string(ar)));
+            MsgBox(ERR, QString::fromLocal8Bit(archive_error_string(ar)));
             return (r);
         }
     }
