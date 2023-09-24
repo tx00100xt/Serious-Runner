@@ -66,6 +66,11 @@ bool Downloader::GetLevel(const QString &strTargetFolder, const QUrl &urlLevel)
 
 bool Downloader::GetMod(const QString &strTargetFolder, const QString &strTargetGame, const QUrl &urlModBin, const QUrl &urlModData)
 {
+#ifdef PLATFORM_UNIX
+    QString strTMPDirPath       = "/tmp";
+#else
+    QString strTMPDirPath       = QDir::homePath() +"/AppData/Local/Temp";
+#endif
     bool bResult;
     // Save Taeget folders and urls
     strFirstTargetFolder = strTargetFolder;
@@ -79,20 +84,25 @@ bool Downloader::GetMod(const QString &strTargetFolder, const QString &strTarget
         bGameUnpack = false;
         iPassCount = 0;
         // Download
-        bResult = GetMain( "/tmp" , urlModData, true);
+        bResult = GetMain( strTMPDirPath , urlModData, true);
     } else {
         // Set type of download
         bModUnpack = true;
         bGameUnpack = false;
         iPassCount = 1;
         // Download
-        bResult = GetMain( "/tmp" , urlModBin, true);
+        bResult = GetMain( strTMPDirPath , urlModBin, true);
     }
     return bResult;
 }
 
 bool Downloader::GetGameSettings(const QString &strTargetFolder, const QUrl &urlGameBin, const QUrl &urlGameSettings)
 {
+#ifdef PLATFORM_UNIX
+    QString strTMPDirPath       = "/tmp";
+#else
+    QString strTMPDirPath       = QDir::homePath() +"/AppData/Local/Temp";
+#endif
     // Save Taeget folders and urls
     strFirstTargetFolder = strTargetFolder;
     strFirstTargetUrl = urlGameBin;
@@ -103,7 +113,7 @@ bool Downloader::GetGameSettings(const QString &strTargetFolder, const QUrl &url
     bGameUnpack = true;
     iPassCount = 1;
     // Download
-    bool bResult = GetMain( "/tmp", urlGameBin, true);
+    bool bResult = GetMain( strTMPDirPath, urlGameBin, true);
     return bResult;
 }
 
@@ -185,29 +195,34 @@ void Downloader::slotOnReply(QNetworkReply* netReply)
     m_file = nullptr;
     netReply->deleteLater();
 
+#ifdef PLATFORM_UNIX
+    QString strTMPDirPath       = "/tmp/";
+#else
+    QString strTMPDirPath       = QDir::homePath() +"/AppData/Local/Temp/";
+#endif
     // Download Progres End
     if(bGameUnpack || bModUnpack){
         if (bGameUnpack && iPassCount == 1){           
-            m_unpack.Extract("/tmp/" + strFirstTargetUrl.fileName(), "/tmp/", 1, 0);
-            m_copydir.CopyAndReplaceFolderContents("/tmp/x64", strFirstTargetFolder, false);
+            m_unpack.Extract(strTMPDirPath + strFirstTargetUrl.fileName(), strTMPDirPath, 1, 0);
+            m_copydir.CopyAndReplaceFolderContents( strTMPDirPath + "x64", strFirstTargetFolder, false);
             iPassCount = 0;
-            GetMain("/tmp/", strSecondTargetUrl, false);
+            GetMain(strTMPDirPath, strSecondTargetUrl, false);
 
         } else if (bGameUnpack && iPassCount == 0){
-            m_unpack.Extract("/tmp/" + strSecondTargetUrl.fileName(), strSecondTargetFolder + "/", 1, 0);
+            m_unpack.Extract(strTMPDirPath + strSecondTargetUrl.fileName(), strSecondTargetFolder + "/", 1, 0);
             bGameUnpack = bModUnpack = false;
             emit signalDownloadProgressEnd();
             emit signalTestGameInstall();
             locked_action = false;
         }
         if (bModUnpack && iPassCount == 1){
-            m_unpack.Extract("/tmp/" + strFirstTargetUrl.fileName(), "/tmp/", 1, 0);
-            m_copydir.CopyAndReplaceFolderContents("/tmp/x64",strFirstTargetFolder, false);
+            m_unpack.Extract(strTMPDirPath + strFirstTargetUrl.fileName(), strTMPDirPath, 1, 0);
+            m_copydir.CopyAndReplaceFolderContents( strTMPDirPath + "x64",strFirstTargetFolder, false);
             iPassCount = 0;
-            GetMain("/tmp/", strSecondTargetUrl, false);
+            GetMain(strTMPDirPath, strSecondTargetUrl, false);
 
         } else if (bModUnpack && iPassCount == 0){
-            m_unpack.Extract("/tmp/" + strSecondTargetUrl.fileName(), strSecondTargetFolder + "/", 1, 0);
+            m_unpack.Extract(strTMPDirPath + strSecondTargetUrl.fileName(), strSecondTargetFolder + "/", 1, 0);
             bGameUnpack = bModUnpack = false;
             emit signalDownloadProgressEnd();
             locked_action = false;

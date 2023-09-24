@@ -43,10 +43,12 @@ MainWindow::MainWindow(QWidget *parent)
     connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
             this, SLOT(slotIconActivated(QSystemTrayIcon::ActivationReason)));
 
+#ifdef PLATFORM_UNIX
     // Splash Screen
     QPixmap pixmap(":/Images/runner-splash.png");
     QSplashScreen splash(pixmap, Qt::WindowStaysOnTopHint);
     splash.show();
+#endif
     SleepMSecs(100);
 
     // Program initialization
@@ -58,7 +60,9 @@ MainWindow::MainWindow(QWidget *parent)
     slotTestGameInstall();
     slotTestGameDataInstall();
     ReScanLocalDB();
+#ifdef PLATFORM_UNIX
     splash.close();
+#endif
 
     // Downloader connect
     connect(&m_downloader, &Downloader::signalUpdateDownloadProgress, this, &MainWindow::slotOnUpdateProgressBar);
@@ -130,17 +134,22 @@ void MainWindow::slotCloseFromTray(){
 void MainWindow::SetVars(){
     // Get paths
     strHomeDirPath       = QDir::homePath();
-    strExecDirPath       = QCoreApplication::applicationFilePath();
     // Set pathd
-    strRunnerDirPath     = strHomeDirPath + strRunnerDirPathSuffix;
+#ifdef PLATFORM_UNIX
     strEngineDirPath     = strHomeDirPath + strEngineDirPathSuffix;
+    //strExecDirPath       = QCoreApplication::applicationFilePath();
+#endif
+    strExecDirPath       = QDir::currentPath();
+    strRunnerDirPath     = strHomeDirPath + strRunnerDirPathSuffix;
     strGameDirFEpath     = strRunnerDirPath + "/SamTFE";
     strGameDirSEpath     = strRunnerDirPath + "/SamTSE";
     strRunnerDBPath      = strRunnerDirPath + "/DB/seriousrunner.db";
+#ifdef PLATFORM_UNIX
     // Test system install
     if(strExecDirPath.contains("/usr/bin")) {
         bUseSystemPath = true;
     }
+#endif
     if(QFile(strGameDirFEpath + "/Mods/XPLUS/XPlus_All.gro").exists()) {
         bFE_XPLUSInstallOk = true;
     }
@@ -173,6 +182,7 @@ void MainWindow::SetVars(){
 // Get Disto name and set flag for SQl download table
 void MainWindow::GetDistroFlag()
 {
+#ifdef PLATFORM_UNIX
     QString strOS=exec("cat /etc/*release|grep NAME");
     // MsgBox(INFO, strOS); // For Debug
 
@@ -186,7 +196,10 @@ void MainWindow::GetDistroFlag()
     }else{
         iDistoFlag = OTHER;
     }
-    // MsgBox(INFO, QString::number(iDistoFlag)); // For Debug
+#else
+    iDistoFlag = WINDOWS;
+#endif
+    //MsgBox(INFO, QString::number(iDistoFlag)); // For Debug
 }
 
 // Set combo box text on center, because on Arch linux we have bug with text on combobox
@@ -261,6 +274,7 @@ bool MainWindow::SearchDB(){
         }
         QString strDBpath;
         QString strDBfilename = "seriousrunner.db";
+#ifdef PLATFORM_UNIX
         if (bUseSystemPath){
             strDBpath = "/usr/share/seriousrunner/DB";
         } else {
@@ -288,6 +302,27 @@ bool MainWindow::SearchDB(){
             }
         }
         bFirstRun = true;
+#else
+        QString strDBpathWithFile = strExecDirPath + "/DB/" + strDBfilename;
+        //MsgBox(INFO,strDBpathWithFile); // For Debug
+        if (!QFile(strDBpathWithFile).exists()){
+            QMessageBox::critical(nullptr, "Serious Runner", "Serious Runner did not find the database seriousrunner.db\n"
+                "Please place file seriousrunner.db in your <Serious-Runner/DB> directory and restart the program.");
+                slotCloseFromTray();
+            return false;
+        } else {
+            if(!QFile::copy(strDBpathWithFile, strRunnerDBPath)){
+                QMessageBox::critical(nullptr, "Serious Runner", "Serious Runner was unable to copy the database to the home directory.\n"
+                    "Please place file seriousrunner.db in '" + strRunnerDBPath + "' and restart the program.");
+                return false;
+            } else {
+                QMessageBox::information(nullptr, "Serious Runner", "Install Serious Runner DB Done!");
+                QPixmap pixmap(":/Images/ok.png");
+                ui->label_db_status_image->setPixmap(pixmap);
+            }
+        }
+        bFirstRun = true;
+#endif
     } else {
         QPixmap pixmap(":/Images/ok.png");
         ui->label_db_status_image->setPixmap(pixmap);
@@ -338,7 +373,7 @@ void MainWindow::ReScanLocalDB()
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(strRunnerDBPath);
     if(!db.open()){
-        MsgBox(ERROR, "Error: Open SQL databese Failed!");
+        MsgBox(ERR, "Error: Open SQL databese Failed!");
         return;
     }
     QSqlQuery qry(db);
@@ -348,7 +383,7 @@ void MainWindow::ReScanLocalDB()
     for(int i = 0; i < 7; i++){
         qry.prepare("SELECT COUNT(*) FROM " + strDBTablesForScan[i]);
         if (!qry.exec()){
-            MsgBox(ERROR, "Error: " + qry.lastError().text());
+            MsgBox(ERR, "Error: " + qry.lastError().text());
             db.close();
             return;
         }
@@ -366,7 +401,7 @@ void MainWindow::ReScanLocalDB()
                 qry.prepare("Select " + strSelect + "  FROM " + strDBTablesForScan[i] + " WHERE " + strIndex + " = :index_num");
                 qry.bindValue(":index_num", j);
                 if (!qry.exec()){
-                    MsgBox(ERROR, "Error: " + qry.lastError().text());
+                    MsgBox(ERR, "Error: " + qry.lastError().text());
                 }
                 qint64 iSizeInDB = 0;
                 QString strTestFile, strStatus, strMD5sum;
@@ -398,7 +433,7 @@ void MainWindow::ReScanLocalDB()
                     qry.bindValue(":index_num", j);
                     qry.bindValue(":Status", strStatus);
                     if (!qry.exec()){
-                        MsgBox(ERROR, "Error: " + qry.lastError().text());
+                        MsgBox(ERR, "Error: " + qry.lastError().text());
                         db.close();
                         return;
                     }
@@ -533,9 +568,15 @@ void MainWindow::slotSetDownloadLabel(QString strLabel)
 void MainWindow::slotTestGameInstall()
 {
     bInstallGameOk = true;
+#ifdef PLATFORM_UNIX
     if(!QFile().exists(strGameDirFEpath + "/Bin/libEngine.so") || !QFile().exists(strGameDirSEpath + "/Bin/libEngineMP.so")){
         bInstallGameOk = false;
     }
+#else
+    if(!QFile().exists(strGameDirFEpath + "/Bin/Engine.dll") || !QFile().exists(strGameDirSEpath + "/Bin/Engine.dll")){
+        bInstallGameOk = false;
+    }
+#endif
     if(!QFile().exists(strGameDirFEpath + "/VirtualTrees/BasicVirtualTree.vrt") || !QFile().exists(strGameDirSEpath + "/VirtualTrees/BasicVirtualTree.vrt")){
         bInstallGameOk = false;
     }
@@ -612,7 +653,7 @@ void MainWindow::on_pushButton_install_clicked()
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(strRunnerDBPath);
     if(!db.open()){
-        MsgBox(ERROR, "Error: Open SQL databese Failed!");
+        MsgBox(ERR, "Error: Open SQL databese Failed!");
         return;
     }
     QSqlQuery qry(db);
@@ -620,7 +661,7 @@ void MainWindow::on_pushButton_install_clicked()
     qry.prepare("Select download_link_bin,distro FROM game_bin WHERE os_num = :os_num");
     qry.bindValue(":os_num", iDistoFlag + 1);
     if (!qry.exec()){
-        MsgBox(ERROR, "Error: " + qry.lastError().text());
+        MsgBox(ERR, "Error: " + qry.lastError().text());
         db.close();
         return;
     }
@@ -654,10 +695,26 @@ void MainWindow::on_pushButton_install_gamedata_clicked()
     iProgressBarIndex = INSTALL_PBAR;
     iUnpackProgressIndex = INSTALL_UNPACKPROGRESS;
     iCopyDirProgressIndex  = INSTALL_COPYPROGRESS;
+    QString strPathFE;
+    QString strPathSE;
+#ifdef PLATFORM_UNIX
+    strPathFE = m_findinhome.FindFileInHomeDir(strFEfiles[4]);
+    strPathSE = m_findinhome.FindFileInHomeDir(strSEfiles[5]);
+#else
+    strPathFE = QFileDialog::getExistingDirectory(this, tr("Choose Serious Sam The First Encounter Directory"),
+                                                 "C:/",
+                                                 QFileDialog::ShowDirsOnly
+                                                 | QFileDialog::DontResolveSymlinks);
+    strPathSE = QFileDialog::getExistingDirectory(this, tr("Choose Serious Sam The Second Encounter Directory"),
+                                                 "C:/",
+                                                 QFileDialog::ShowDirsOnly
+                                                 | QFileDialog::DontResolveSymlinks);
 
-    QString strPathFE = m_findinhome.FindFileInHomeDir(strFEfiles[4]);
-    QString strPathSE = m_findinhome.FindFileInHomeDir(strSEfiles[5]);
-
+    if(!QFile().exists(strPathFE + "/1_00_music.gro") || !QFile().exists(strPathSE + "/SE1_00_Levels.gro")){
+        MsgBox(WARN, "You specified the path to the game data incorrectly. Try again!");
+        return;
+    }
+#endif
     // Copy game data from found directory after search
     m_copydir.CopyAndReplaceFolderContents(strPathFE + "/Help", strRunnerDirPath + "/SamTFE/Help", false);
     m_copydir.CopyAndReplaceFolderContents(strPathFE + "/Levels", strRunnerDirPath + "/SamTFE/Levels", false);
@@ -670,7 +727,7 @@ void MainWindow::on_pushButton_install_gamedata_clicked()
             QFile::copy(strPathFE + "/" + strFEfiles[i], strRunnerDirPath + "/SamTFE/" + strFEfiles[i]);
        } else {
            ui->label_progress->setText("");
-           MsgBox(ERROR, "File: " + strPathFE + "/" + strFEfiles[i] + " not found!");
+           MsgBox(ERR, "File: " + strPathFE + "/" + strFEfiles[i] + " not found!");
            return;
        }
     }
@@ -679,7 +736,7 @@ void MainWindow::on_pushButton_install_gamedata_clicked()
              QFile::copy(strPathSE + "/" + strSEfiles[i], strRunnerDirPath + "/SamTSE/" + strSEfiles[i]);
         } else {
             ui->label_progress->setText("");
-            MsgBox(ERROR, "File: " + strPathSE + "/" + strSEfiles[i] + " not found!");
+            MsgBox(ERR, "File: " + strPathSE + "/" + strSEfiles[i] + " not found!");
             return;
         }
     }
@@ -752,7 +809,7 @@ void MainWindow::SetImagesFromSql(QString strSqlTable,QString strLabelImg1,QStri
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(strRunnerDBPath);
     if(!db.open()){
-        MsgBox(ERROR, "Open SQL databese Failed!");
+        MsgBox(ERR, "Open SQL databese Failed!");
         return;
     }
     QSqlQuery qry(db);
@@ -764,7 +821,7 @@ void MainWindow::SetImagesFromSql(QString strSqlTable,QString strLabelImg1,QStri
     }
     qry.bindValue(":index_num", iTableRowIndex);
     if (!qry.exec()){
-        MsgBox(ERROR, "Error: " + qry.lastError().text());
+        MsgBox(ERR, "Error: " + qry.lastError().text());
         db.close();
         return;
     }
@@ -901,7 +958,7 @@ void MainWindow::FillTable(QString strSqlTable, QString strTableView)
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(strRunnerDBPath);
     if(!db.open()){
-        MsgBox(ERROR, "Error: Open SQL databese Failed!");
+        MsgBox(ERR, "Error: Open SQL databese Failed!");
         return;
     }
     QSqlQuery qry(db);
@@ -953,7 +1010,7 @@ void MainWindow::StartLevel(QString strSqlTable, int iXPLUS, int iDifficulty)
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(strRunnerDBPath);
     if(!db.open()){
-        MsgBox(ERROR, "Error: Open SQL databese Failed!");
+        MsgBox(ERR, "Error: Open SQL databese Failed!");
         return;
     }
     QSqlQuery qry(db);
@@ -961,7 +1018,7 @@ void MainWindow::StartLevel(QString strSqlTable, int iXPLUS, int iDifficulty)
     qry.prepare("Select level_file,Status FROM " + strSqlTable + " WHERE level_num = :level_num");
     qry.bindValue(":level_num", iTableRowIndex);
     if (!qry.exec()){
-        MsgBox(ERROR, "Error: " + qry.lastError().text());
+        MsgBox(ERR, "Error: " + qry.lastError().text());
         db.close();
         return;
     }
@@ -977,21 +1034,29 @@ void MainWindow::StartLevel(QString strSqlTable, int iXPLUS, int iDifficulty)
         return;
     }
 
+#ifdef PLATFORM_UNIX
+    QString strGameSuffix = "/Bin/SeriousSam";
+#else
+    QString strGameSuffix = "/Bin/SeriousSam.exe";
+#endif
     QString strProgram;
     QStringList arguments;
     if(strSqlTable.contains("fe_")) {
-        strProgram = strGameDirFEpath + "/Bin/SeriousSam";
+        strProgram = strGameDirFEpath +  strGameSuffix;
         MakeDifficultyScript(iDifficulty, strGameDirFEpath + "/Scripts/Game_difficulty.ini");
         if(iXPLUS) {
             arguments << "+game" << "XPLUS";
          }
     } else {
         MakeDifficultyScript(iDifficulty, strGameDirSEpath + "/Scripts/Game_difficulty.ini");
-        strProgram = strGameDirSEpath + "/Bin/SeriousSam";
+        strProgram = strGameDirSEpath +  strGameSuffix;
         if(iXPLUS) {
            arguments << "+game" << "XPLUS";
         }
     }
+#ifdef PLATFORM_WIN32
+    strLevelFile = QDir::toNativeSeparators(strLevelFile);
+#endif
     arguments << "+level" << strLevelFile;
     arguments << "+script" << "Scripts/Game_difficulty.ini";
 
@@ -1050,7 +1115,7 @@ void MainWindow::StartMod(QString strSqlTable, int iDifficulty)
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(strRunnerDBPath);
     if(!db.open()){
-        MsgBox(ERROR, "Error: Open SQL databese Failed!");
+        MsgBox(ERR, "Error: Open SQL databese Failed!");
         return;
     }
     QSqlQuery qry(db);
@@ -1058,7 +1123,7 @@ void MainWindow::StartMod(QString strSqlTable, int iDifficulty)
     qry.prepare("Select mod_internal_name,Status,start_level FROM " + strSqlTable + " WHERE mod_num = :index_num");
     qry.bindValue(":index_num", iTableRowIndex);
     if (!qry.exec()){
-        MsgBox(ERROR, "Error: " + qry.lastError().text());
+        MsgBox(ERR, "Error: " + qry.lastError().text());
         db.close();
         return;
     }
@@ -1075,12 +1140,17 @@ void MainWindow::StartMod(QString strSqlTable, int iDifficulty)
         return;
     }
 
+#ifdef PLATFORM_UNIX
+    QString strGameSuffix = "/Bin/SeriousSam";
+#else
+    QString strGameSuffix = "/Bin/SeriousSam.exe";
+#endif
     QString strProgram;
     if(strSqlTable.contains("fe_")) {
-        strProgram = strGameDirFEpath + "/Bin/SeriousSam";        
+        strProgram = strGameDirFEpath + strGameSuffix;
         MakeDifficultyScript(iDifficulty, strGameDirFEpath + "/Scripts/Game_difficulty.ini");
     } else {
-        strProgram = strGameDirSEpath + "/Bin/SeriousSam";       
+        strProgram = strGameDirSEpath + strGameSuffix;
         MakeDifficultyScript(iDifficulty, strGameDirSEpath + "/Scripts/Game_difficulty.ini");
     }
     QStringList arguments;
@@ -1118,7 +1188,7 @@ void MainWindow::DownloadLevel(QString strSqlTable, QString strGameDirPath)
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(strRunnerDBPath);
     if(!db.open()){
-        MsgBox(ERROR, "Error: Open SQL databese Failed!");
+        MsgBox(ERR, "Error: Open SQL databese Failed!");
         return;
     }
     QSqlQuery qry(db);
@@ -1126,7 +1196,7 @@ void MainWindow::DownloadLevel(QString strSqlTable, QString strGameDirPath)
     qry.prepare("Select level_download_link,Status FROM " + strSqlTable + " WHERE level_num = :level_num");
     qry.bindValue(":level_num", iTableRowIndex);
     if (!qry.exec()){
-        MsgBox(ERROR, "Error: " + qry.lastError().text());
+        MsgBox(ERR, "Error: " + qry.lastError().text());
         db.close();
         return;
     }
@@ -1204,6 +1274,7 @@ void MainWindow::DownloadMod(QString strSqlTable)
 
     // Choose distro
     QString strSqlUrlBin;
+#ifdef PLATFORM_UNIX
     switch(iDistoFlag )
     {
         case FREEBSD:
@@ -1222,12 +1293,14 @@ void MainWindow::DownloadMod(QString strSqlTable)
             strSqlUrlBin = "mod_download_link_lnx_bin";
             break;
     }
-
+#else
+    strSqlUrlBin = "mod_download_link_win_bin";
+#endif
     // Get download link from sql
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(strRunnerDBPath);
     if(!db.open()){
-        MsgBox(ERROR, "Error: Open SQL databese Failed!");
+        MsgBox(ERR, "Error: Open SQL databese Failed!");
         return;
     }
     QSqlQuery qry(db);
@@ -1235,7 +1308,7 @@ void MainWindow::DownloadMod(QString strSqlTable)
     qry.prepare("Select " + strSqlUrlBin + ",mod_download_link_data,Status FROM " + strSqlTable + " WHERE mod_num = :mod_num");
     qry.bindValue(":mod_num", iTableRowIndex);
     if (!qry.exec()){
-        MsgBox(ERROR, "Error: " + qry.lastError().text());
+        MsgBox(ERR, "Error: " + qry.lastError().text());
         db.close();
         return;
     }
@@ -1394,9 +1467,9 @@ void MainWindow::FE_UseXPLUS(int arg, int iTable, bool bInstalled)
         MsgBox(INFO,"You can download XPLUS Mod before using!");
     }
     if(!arg){
-        iFE_StartWithXplus[iTable] = FALSE;
+        iFE_StartWithXplus[iTable] = BOOLFALSE;
     } else {
-        iFE_StartWithXplus[iTable] = TRUE;
+        iFE_StartWithXplus[iTable] = BOOLTRUE;
     }
 }
 
@@ -1406,9 +1479,9 @@ void MainWindow::SE_UseXPLUS(int arg, int iTable, bool bInstalled)
         MsgBox(INFO,"You can download XPLUS Mod before using!");
     }
     if(!arg){
-        iSE_StartWithXplus[iTable] = FALSE;
+        iSE_StartWithXplus[iTable] = BOOLFALSE;
     } else {
-        iSE_StartWithXplus[iTable] = TRUE;
+        iSE_StartWithXplus[iTable] = BOOLTRUE;
     }
 }
 void MainWindow::on_checkBox_fe_official_use_xplus_stateChanged(int arg)
@@ -1528,7 +1601,7 @@ void MainWindow::MsgBox(int iType, QString strMessage)
         case WARN:
              msgBox->setIconPixmap(QPixmap(":/Images/warning.png"));
             break;
-        case ERROR:
+        case ERR:
              msgBox->setIconPixmap(QPixmap(":/Images/error.png"));
             break;
         default:

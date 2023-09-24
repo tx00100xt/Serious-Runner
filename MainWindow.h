@@ -193,7 +193,9 @@ private:
 
     // Used classes and vars
     Downloader    m_downloader; // download class
+#ifdef PLATFORM_UNIX
     FindInHomeDir m_findinhome;
+#endif
     CopyDir       m_copydir;
     QProcess      *process;
     QMessageBox   *msgBox;
@@ -209,8 +211,12 @@ private:
     QString strEngineDirPath;
 
     // Path's suffix
-    QString strEngineDirPathSuffix  = "/.local/share/Serious-Engine";
+#ifdef PLATFORM_WIN32
+    QString strRunnerDirPathSuffix  = + "/AppData/Local/Serious-Runner";
+#else
     QString strRunnerDirPathSuffix  = "/.local/share/Serious-Runner";
+    QString strEngineDirPathSuffix  = "/.local/share/Serious-Engine";
+#endif
 
     // Flags
     bool bUseSystemPath             = false;

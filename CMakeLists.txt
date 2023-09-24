@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(Serious-Runner VERSION 1.0)
+project(Serious-Runner VERSION 1.1)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -10,6 +10,58 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+if(POLICY CMP0074)
+  cmake_policy(SET CMP0074 NEW) #3.12.0 `find_package()`` uses ``<PackageName>_ROOT`` variables.
+endif()
+
+OPTION(ENABLE_LZMA "Enable the use of the system LZMA library if found" ON)
+OPTION(ENABLE_ZLIB "Enable the use of the system ZLIB library if found" ON)
+OPTION(ENABLE_BZip2 "Enable the use of the system BZip2 library if found" ON)
+
+IF(MINGW)
+  ADD_DEFINITIONS(-D__USE_MINGW_ANSI_STDIO)
+  ADD_DEFINITIONS(-D__MINGW_USE_VC2005_COMPAT)
+ENDIF()
+
+IF(WIN32)
+  SET(LOCAL_INSTALL TRUE)
+ENDIF()
+
+#
+# Check compress/decompress libraries
+#
+IF(WIN32 AND NOT CMAKE_CL_64 AND NOT CYGWIN)
+  # GnuWin32 is only for Win32, not Win64.
+  SET(__GNUWIN32PATH "C:/Program Files/GnuWin32")
+ENDIF(WIN32 AND NOT CMAKE_CL_64 AND NOT CYGWIN)
+IF(DEFINED __GNUWIN32PATH AND EXISTS "${__GNUWIN32PATH}")
+  # You have to add a path available DLL file into PATH environment variable.
+  # Maybe DLL path is "C:/Program Files/GnuWin32/bin".
+  # The zlib and the bzip2 Setup program have installed programs and DLLs into
+  # "C:/Program Files/GnuWin32" by default.
+  # This is convenience setting for Windows.
+  SET(CMAKE_PREFIX_PATH ${__GNUWIN32PATH} $(CMAKE_PREFIX_PATH))
+  #
+  # If you didn't use Setup program or installed into nonstandard path,
+  # cmake cannot find out your zlib or bzip2 libraries and include files,
+  # you should execute cmake with  -DCMAKE_PREFIX_PATH option.
+  #   e.g.
+  #     cmake -DCMAKE_PREFIX_PATH=<your-GnuWin32-path> <path-to-source>
+  #
+  # If compiling error occurred in zconf.h, You may need patch to zconf.h.
+  #--- zconf.h.orig	2005-07-21 00:40:26.000000000
+  #+++ zconf.h	2009-01-19 11:39:10.093750000
+  #@@ -286,7 +286,7 @@
+  #
+  # #if 1           /* HAVE_UNISTD_H -- this line is updated by ./configure */
+  # #  include <sys/types.h> /* for off_t */
+  #-#  include <unistd.h>    /* for SEEK_* and off_t */
+  #+#  include <stdio.h>    /* for SEEK_* and off_t */
+  # #  ifdef VMS
+  # #    include <unixio.h>   /* for off_t */
+  # #  endif
+ENDIF(DEFINED __GNUWIN32PATH AND EXISTS "${__GNUWIN32PATH}")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 include(CheckCXXCompilerFlag)
@@ -151,6 +203,14 @@ if (LINUX)
     endif (DEBIAN_FOUND)
 endif (LINUX)
 
+if(WIN32)
+    set(CMAKE_OS_NAME "Windows")
+    add_definitions(-DPLATFORM_WIN32=1)
+    add_definitions(-DPRAGMA_ONCE=1)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS=1)
+    add_definitions(-D_CRT_SECURE_NO_DEPRECATE=1)
+endif()
+
 message(STATUS "Operating system name: ${CMAKE_OS_NAME}")
 
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "AppleClang")
@@ -266,7 +326,23 @@ else()
     message(FATAL_ERROR "Unsupported compiler")
 endif()
 
-set(PROJECT_SOURCES
+if(WIN32)
+    set(PROJECT_SOURCES
+        Resources.qrc
+        Main.cpp
+        MainWindow.cpp
+        MainWindow.h
+        MainWindow.ui
+        Classes/Downloader.cpp
+        Classes/Downloader.h
+        Classes/Unpacker.cpp
+        Classes/Unpacker.h
+        Classes/CopyDir.cpp
+        Classes/CopyDir.h
+        Classes/Types.h
+)
+else()
+    set(PROJECT_SOURCES
         Resources.qrc
         Main.cpp
         MainWindow.cpp
@@ -282,6 +358,7 @@ set(PROJECT_SOURCES
         Classes/CopyDir.h
         Classes/Types.h
 )
+endif()
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(Serious-Runner
@@ -299,14 +376,23 @@ else()
         )
 # Define properties for Android with Qt 5 after find_package() calls as:
 #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
+    elseif(WIN32)
+	    set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/seriousrunner.rc")
+        add_executable(Serious-Runner
+            ${PROJECT_SOURCES}  ${APP_ICON_RESOURCE_WINDOWS}
+        )
     else()
         add_executable(Serious-Runner
             ${PROJECT_SOURCES}
-        )
+        )		
     endif()
 endif()
 
 # Link libraries.
+if(WIN32)
+    # uncoment this for static link
+    # set_target_properties(Serious-Runner PROPERTIES LINK_FLAGS "-static")
+endif()
 
 target_link_libraries(Serious-Runner PRIVATE Qt${QT_VERSION_MAJOR}::Widgets  Qt5::Sql Qt5::Network LibArchive::LibArchive LibLZMA::LibLZMA BZip2::BZip2 ZLIB::ZLIB)
 

@@ -1,4 +1,5 @@
-﻿#include <sys/types.h>
+﻿#include <QtCore/qiodevice.h>
+#include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -45,7 +46,8 @@ void Unpacker::Extract(QString strFileName, QString strPath, int iDoExtract, int
     archive_read_support_format_zip(a);
     archive_read_support_filter_compress(a);
     archive_read_support_format_tar(a);
-    archive_read_support_format_cpio(a);
+    archive_read_support_format_cpio(a);   
+    archive_read_support_format_7zip(a);
     archive_write_disk_set_standard_lookup(ext);
 
     QByteArray ba1 = strFileName.toLocal8Bit();
@@ -130,7 +132,7 @@ void Unpacker::MsgBox(int type, QString strMessage)
         case WARN:
              msgBox.setIconPixmap(QPixmap(":/Images/warning.png"));
             break;
-        case ERROR:
+        case 2:
              msgBox.setIconPixmap(QPixmap(":/Images/error.png"));
             break;
         default:

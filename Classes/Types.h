@@ -6,7 +6,7 @@
 enum MESSAGETYPE {
     INFO,
     WARN,
-    ERROR
+    ERR
 };
 
 enum DOWNLOADTYPE {
@@ -40,8 +40,8 @@ enum SE_TABLES {
 };
 
 enum BOOLTYPES {
-    FALSE,
-    TRUE
+    BOOLFALSE,
+    BOOLTRUE
 };
 
 enum PROGRESSBARINDEX {
@@ -71,7 +71,8 @@ enum DISTROFLAG {
     FREEBSD,
     ALPINE,
     LINUX,
-    OTHER
+    OTHER,
+    WINDOWS
 };
 
 enum APPTHEMES {
