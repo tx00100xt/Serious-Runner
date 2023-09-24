@@ -344,7 +344,7 @@ void MainWindow::ReScanLocalDB()
     QSqlQuery qry(db);
     qry.setForwardOnly(true);
 
-    QString strFile, strStatus;
+    QString strFile, strStatus, strStatusInDB;
     for(int i = 0; i < 7; i++){
         qry.prepare("SELECT COUNT(*) FROM " + strDBTablesForScan[i]);
         if (!qry.exec()){
@@ -358,10 +358,10 @@ void MainWindow::ReScanLocalDB()
             QString strIndex, strSelect;
             if(strDBTablesForScan[i].contains("maps")){
                 strIndex  = "level_num";
-                strSelect = "level_gro,size,md5sum";
+                strSelect = "level_gro,size,Status";
             } else {
                 strIndex  = "mod_num";
-                strSelect = "mod_testfile,testfile_size,md5sum";
+                strSelect = "mod_testfile,testfile_size,Status";
             }
                 qry.prepare("Select " + strSelect + "  FROM " + strDBTablesForScan[i] + " WHERE " + strIndex + " = :index_num");
                 qry.bindValue(":index_num", j);
@@ -373,6 +373,7 @@ void MainWindow::ReScanLocalDB()
                 while (qry.next()) {
                     strTestFile = qry.value(0).toString();
                     iSizeInDB = qry.value(1).toInt();
+                    strStatusInDB = qry.value(2).toString();
                 }
                 if(strDBTablesForScan[i].contains("fe_")){
                     strFile = strRunnerDirPath + "/SamTFE/" + strTestFile;
@@ -385,8 +386,12 @@ void MainWindow::ReScanLocalDB()
                     iSize = scanFile.size();
                     scanFile.close();
                 }
-                if(iSize !=0 && iSizeInDB == iSize){
+                if((iSize !=0 ) && (iSizeInDB == iSize)){
                     strStatus = "Installed";
+                } else {
+                    strStatus = "---";
+                }
+                if((strStatus.contains("---") && strStatusInDB.contains("Installed")) || (strStatus.contains("Installed") && strStatusInDB.contains("---"))){
                     qry.first();
                     qry.prepare("UPDATE " + strDBTablesForScan[i] + " SET Status = :Status"
                                 " WHERE " + strIndex + " = :index_num");
@@ -689,6 +694,10 @@ void MainWindow::on_pushButton_update_db_clicked()
 {
     if(TestDBupdateNeed()) {
         MsgBox(INFO, "The latest version of the database is installed. No update required!");
+        return;
+    }
+    if(iRemoteSizeDB == 0) {
+        MsgBox(WARN, "Connection problem, try again later!");
         return;
     }
     //MsgBox(INFO,"Database update available: " + QString::number(iRemoteSizeDB));
