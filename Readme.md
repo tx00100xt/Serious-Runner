@@ -79,8 +79,10 @@ make -j4
 su
 make install
 exit
-``` 
+```
 
+Building for Windows
+--------------------
 It is assumed that you have a deployed development environment that includes **Qt5, MinGW-w64, CMake, OpenSSL** 64-bit.
 You can find documentation on the deployment of this environment on the Internet. Using this environment you need to build the following libraries from source code:
 
