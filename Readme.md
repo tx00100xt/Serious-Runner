@@ -171,7 +171,7 @@ emerge -av seriousrunner --autounmask=y
 ### Build status
 |CI|Platform|Compiler|Configurations|Platforms|Status|
 |---|---|---|---|---|---|
-|GitHub Actions|Ubuntu, Alpine, FreeBSD|GCC, Clang|Release| x64|![GitHub Actions Build Status](https://github.com/tx00100xt/Serious-Runner/actions/workflows/cibuild.yml/badge.svg)
+|GitHub Actions|Ubuntu, Alpine, FreeBSD, Windows|GCC, Clang, MinGW-w64|Release| x64|![GitHub Actions Build Status](https://github.com/tx00100xt/Serious-Runner/actions/workflows/cibuild.yml/badge.svg)
 
 You can download a the automatically build based on the latest commit.  
 To do this, go to the [Actions tab], select the top workflows, and then Artifacts.
