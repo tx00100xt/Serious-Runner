@@ -1,0 +1,7 @@
+Put compiled programm, dlls and plugins here. See TREE file.
+
+For create installer put this commands in console:
+
+cd Serious-Runner
+cd Install
+binarycreator.exe  -f -v -c "config/config.xml" -p "packages" "Serious-Runner-1.1-win64-Installer.exe"

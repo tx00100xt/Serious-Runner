@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Installer>
+    <Name>Serious Runner</Name>
+    <Version>1.1.0</Version>
+    <Title>Serious Runner</Title>
+    <Publisher>Alexander t.x00100x.t@yandex.ru</Publisher>
+    <!-- Directory name is used in component.xml -->
+    <StartMenuDir>Serious Runner</StartMenuDir>
+    <TargetDir>@HomeDir@/Serious Runner</TargetDir>
+	<ProductUrl>https://github.com/tx00100xt/Serious-Runner</ProductUrl>
+</Installer>

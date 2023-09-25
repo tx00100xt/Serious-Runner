@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package>
+    <DisplayName>Serious Runner</DisplayName>
+    <Description>Serious Runner program that loads and runs content created by users.</Description>
+    <Version>1.1.0-1</Version>
+    <ReleaseDate>2023-09-24</ReleaseDate>
+    <Licenses>
+        <License name="GNU GENERAL PUBLIC LICENSE Version 2" file="License.txt"/>
+    </Licenses>	
+    <Default>true</Default>
+    <Script>installscript.qs</Script>
+</Package>
