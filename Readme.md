@@ -109,7 +109,7 @@ If everything is done correctly you will get the following output:
 
 ![Serious Runner makepng](https://raw.githubusercontent.com/tx00100xt/Serious-Runner/main/Picturies/make.png)
 
-After receiving the original executable file, add the necessary libraries and plugins to the program directory.
+After receiving the original executable file, add the necessary libraries and plugins to the program directory.  
 **See file [TREE]**
 
 To create a program installer, use the commands:
