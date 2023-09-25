@@ -110,7 +110,16 @@ If everything is done correctly you will get the following output:
 ![Serious Runner makepng](https://raw.githubusercontent.com/tx00100xt/Serious-Runner/main/Picturies/make.png)
 
 After receiving the original executable file, add the necessary libraries and plugins to the program directory.
-As examples, you can take the desired list from the [release] for Windows.
+**See file [TREE]**
+
+To create a program installer, use the commands:
+```
+cd Serious-Runner
+cd Install
+binarycreator.exe  -f -v -c "config/config.xml" -p "packages" "Serious-Runner-1.1-win64-Installer.exe"
+```
+**Note:**
+- You must have it installed Qt Installer Framework
 
 Screenshots of the program
 --------------------------
@@ -235,3 +244,4 @@ License
 [Actions tab]: https://github.com/tx00100xt/Serious-Runner/actions "Download Artifacts"
 [release]: https://github.com/tx00100xt/Serious-Runner/releases "Download Release"
 [MIT license]: https://github.com/tx00100xt/Serious-Runner/blob/main/Themes/LICENSE "MIT license"
+[TREE]: https://github.com/tx00100xt/Serious-Runner/blob/main/Install/packages/org.seriousrunner.install/data/Serious-Runner/TREE
