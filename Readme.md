@@ -144,7 +144,7 @@ Screenshots of the program
 
 Releases
 --------
-You can download the finished [release] for Linux, Alpine Linux(musl) and FreeBSD on the releases page:
+You can download the finished [release] for Linux, Alpine Linux(musl), FreeBSD and Windows on the releases page:
 
 Just unpack the archive in any location convenient for you in your home directory. The only condition is the presence of game data for the games Serious Sam Classic The First Encounter and Serious Sam Classic The Second in the home directory, the program will do the rest itself.
 
@@ -175,10 +175,14 @@ emaint sync --repo serioussam
 emerge -av seriousrunner --autounmask=y
 ```
 
+### Windows users
+From the [release] page you can download ready-made builds of the portable version and the installer with both dynamic and static linking.  
+With support for OpenSSL v1.1 and OpenSSL v3.  
+
 ### Build status
 |CI|Platform|Compiler|Configurations|Platforms|Status|
 |---|---|---|---|---|---|
-|GitHub Actions|Ubuntu, Alpine, FreeBSD|GCC, Clang|Release| x64|![GitHub Actions Build Status](https://github.com/tx00100xt/Serious-Runner/actions/workflows/cibuild.yml/badge.svg)
+|GitHub Actions|Ubuntu, Alpine, FreeBSD, Windows|GCC, Clang, MinGW-w64|Release| x64|![GitHub Actions Build Status](https://github.com/tx00100xt/Serious-Runner/actions/workflows/cibuild.yml/badge.svg)
 
 You can download a the automatically build based on the latest commit.  
 To do this, go to the [Actions tab], select the top workflows, and then Artifacts.
