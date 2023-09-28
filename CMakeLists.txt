@@ -18,6 +18,7 @@ endif()
 OPTION(ENABLE_LZMA "Enable the use of the system LZMA library if found" ON)
 OPTION(ENABLE_ZLIB "Enable the use of the system ZLIB library if found" ON)
 OPTION(ENABLE_BZip2 "Enable the use of the system BZip2 library if found" ON)
+OPTION(ENABLE_STATIC_LINK "Enable static link" OFF)
 
 IF(MINGW)
   ADD_DEFINITIONS(-D__USE_MINGW_ANSI_STDIO)
@@ -31,23 +32,27 @@ ENDIF()
 #
 # Check compress/decompress libraries
 #
-IF(WIN32 AND NOT CMAKE_CL_64 AND NOT CYGWIN)
-  # GnuWin32 is only for Win32, not Win64.
-  SET(__GNUWIN32PATH "C:/Program Files/GnuWin32")
-ENDIF(WIN32 AND NOT CMAKE_CL_64 AND NOT CYGWIN)
-IF(DEFINED __GNUWIN32PATH AND EXISTS "${__GNUWIN32PATH}")
+IF(WIN32 AND NOT CYGWIN)
+  # GnuWin64
+  IF(ENABLE_STATIC_LINK)
+    SET(__GNUWIN64PATH "C:/Program Files/GnuWin64-static")
+  ELSE()
+    SET(__GNUWIN64PATH "C:/Program Files/GnuWin64-dynamic")
+ENDIF()      
+ENDIF(WIN32 AND NOT CYGWIN)
+IF(DEFINED __GNUWIN64PATH AND EXISTS "${__GNUWIN64PATH}")
   # You have to add a path available DLL file into PATH environment variable.
-  # Maybe DLL path is "C:/Program Files/GnuWin32/bin".
+  # Maybe DLL path is "C:/Program Files/GnuWin64-dynamic/bin".
   # The zlib and the bzip2 Setup program have installed programs and DLLs into
   # "C:/Program Files/GnuWin32" by default.
   # This is convenience setting for Windows.
-  SET(CMAKE_PREFIX_PATH ${__GNUWIN32PATH} $(CMAKE_PREFIX_PATH))
+  SET(CMAKE_PREFIX_PATH ${__GNUWIN64PATH} $(CMAKE_PREFIX_PATH))
   #
   # If you didn't use Setup program or installed into nonstandard path,
   # cmake cannot find out your zlib or bzip2 libraries and include files,
   # you should execute cmake with  -DCMAKE_PREFIX_PATH option.
   #   e.g.
-  #     cmake -DCMAKE_PREFIX_PATH=<your-GnuWin32-path> <path-to-source>
+  #     cmake -DCMAKE_PREFIX_PATH=<your-GnuWin64-path> <path-to-source>
   #
   # If compiling error occurred in zconf.h, You may need patch to zconf.h.
   #--- zconf.h.orig	2005-07-21 00:40:26.000000000
@@ -61,7 +66,7 @@ IF(DEFINED __GNUWIN32PATH AND EXISTS "${__GNUWIN32PATH}")
   # #  ifdef VMS
   # #    include <unixio.h>   /* for off_t */
   # #  endif
-ENDIF(DEFINED __GNUWIN32PATH AND EXISTS "${__GNUWIN32PATH}")
+ENDIF(DEFINED __GNUWIN64PATH AND EXISTS "${__GNUWIN64PATH}")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 include(CheckCXXCompilerFlag)
@@ -390,11 +395,14 @@ endif()
 
 # Link libraries.
 if(WIN32)
-    # uncoment this for static link
-    # set_target_properties(Serious-Runner PROPERTIES LINK_FLAGS "-static")
+    if(ENABLE_STATIC_LINK)
+        target_link_libraries(Serious-Runner PUBLIC "-static" Qt${QT_VERSION_MAJOR}::Widgets  Qt5::Sql Qt5::Network LibArchive::LibArchive LibLZMA::LibLZMA BZip2::BZip2 ZLIB::ZLIB)
+    else()
+	    target_link_libraries(Serious-Runner PRIVATE Qt${QT_VERSION_MAJOR}::Widgets  Qt5::Sql Qt5::Network LibArchive::LibArchive LibLZMA::LibLZMA BZip2::BZip2 ZLIB::ZLIB)
+	endif()
+else()
+    target_link_libraries(Serious-Runner PRIVATE Qt${QT_VERSION_MAJOR}::Widgets  Qt5::Sql Qt5::Network LibArchive::LibArchive LibLZMA::LibLZMA BZip2::BZip2 ZLIB::ZLIB)
 endif()
-
-target_link_libraries(Serious-Runner PRIVATE Qt${QT_VERSION_MAJOR}::Widgets  Qt5::Sql Qt5::Network LibArchive::LibArchive LibLZMA::LibLZMA BZip2::BZip2 ZLIB::ZLIB)
 
 set_target_properties(Serious-Runner PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com

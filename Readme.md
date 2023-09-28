@@ -93,9 +93,20 @@ You can find documentation on the deployment of this environment on the Internet
 
 You need to place the resulting libraries and header files in:
 ```
-"C:/Program Files/GnuWin32/lib"
-"C:/Program Files/GnuWin32/include"
+"C:/Program Files/GnuWin64/lib"
+"C:/Program Files/GnuWin64/include"
 ```
+To statically link the library with the program, edit the CMakeLists.txt file, setting the **ON** option for:
+```
+OPTION(ENABLE_STATIC_LINK "Enable static link" OFF)
+```
+and place statically the libraries and header files in
+```
+"C:/Program Files/GnuWin64-static/lib"
+"C:/Program Files/GnuWin64-static/include"
+```
+f you have a compiled static version of Qt5, you can build a static version of the application containing just one file, next to which you only need to place two openssl libraries.
+
 You can take ready-made libraries and header files from the **GnuWin** project directory.
 Once everything is ready, open the powershell and run the commands:
 ```
@@ -105,11 +116,7 @@ mkdir build && cd build
 cmake -G "MinGW Makefiles" ..
 mingw32-make
 ```
-If everything is done correctly you will get the following output:
-
-![Serious Runner makepng](https://raw.githubusercontent.com/tx00100xt/Serious-Runner/main/Picturies/make.png)
-
-After receiving the original executable file, add the necessary libraries and plugins to the program directory.  
+After receiving the original executable file, add the necessary libraries and plugins to the program directory.
 **See file [TREE]**
 
 To create a program installer, use the commands:
@@ -171,7 +178,7 @@ emerge -av seriousrunner --autounmask=y
 ### Build status
 |CI|Platform|Compiler|Configurations|Platforms|Status|
 |---|---|---|---|---|---|
-|GitHub Actions|Ubuntu, Alpine, FreeBSD, Windows|GCC, Clang, MinGW-w64|Release| x64|![GitHub Actions Build Status](https://github.com/tx00100xt/Serious-Runner/actions/workflows/cibuild.yml/badge.svg)
+|GitHub Actions|Ubuntu, Alpine, FreeBSD|GCC, Clang|Release| x64|![GitHub Actions Build Status](https://github.com/tx00100xt/Serious-Runner/actions/workflows/cibuild.yml/badge.svg)
 
 You can download a the automatically build based on the latest commit.  
 To do this, go to the [Actions tab], select the top workflows, and then Artifacts.

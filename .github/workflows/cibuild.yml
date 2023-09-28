@@ -249,9 +249,9 @@ jobs:
         mkdir ${{github.workspace}}\Install\packages\org.seriousrunner.install\data\Serious-Runner\DB
         copy ${{github.workspace}}\DB\seriousrunner.db ${{github.workspace}}\Install\packages\org.seriousrunner.install\data\Serious-Runner\DB        
         echo *** Copy libarhive ***
-        copy "C:\Program Files\GnuWin32\bin\libarchive.dll" ${{github.workspace}}\Install\packages\org.seriousrunner.install\data\Serious-Runner
-        copy "C:\Program Files\GnuWin32\bin\libzlib.dll" ${{github.workspace}}\Install\packages\org.seriousrunner.install\data\Serious-Runner
-        copy "C:\Program Files\GnuWin32\bin\bz2-1.dll" ${{github.workspace}}\Install\packages\org.seriousrunner.install\data\Serious-Runner                
+        copy "C:\Program Files\GnuWin64\bin\libarchive.dll" ${{github.workspace}}\Install\packages\org.seriousrunner.install\data\Serious-Runner
+        copy "C:\Program Files\GnuWin64\bin\libzlib.dll" ${{github.workspace}}\Install\packages\org.seriousrunner.install\data\Serious-Runner
+        copy "C:\Program Files\GnuWin64\bin\bz2-1.dll" ${{github.workspace}}\Install\packages\org.seriousrunner.install\data\Serious-Runner                
         echo *** Copy openssl libs ***
         copy ${{github.workspace}}\Qt\Tools\OpenSSL\Win_x64\bin\libcrypto-1_1-x64.dll ${{github.workspace}}\Install\packages\org.seriousrunner.install\data\Serious-Runner
         copy ${{github.workspace}}\Qt\Tools\OpenSSL\Win_x64/bin\libssl-1_1-x64.dll ${{github.workspace}}\Install\packages\org.seriousrunner.install\data\Serious-Runner        
