@@ -176,8 +176,7 @@ emerge -av seriousrunner --autounmask=y
 ```
 
 ### Windows users
-From the [release] page you can download ready-made builds of the portable version and the installer with both dynamic and static linking.  
-With support for OpenSSL v1.1 and OpenSSL v3.  
+From the [release] page you can download ready-made builds of the portable version and the installer with both dynamic and static linking. With support for OpenSSL v1.1 and OpenSSL v3.  
 
 ### Build status
 |CI|Platform|Compiler|Configurations|Platforms|Status|
