@@ -73,8 +73,8 @@ include(CheckCXXCompilerFlag)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
-find_package(Qt5Sql REQUIRED)
-find_package(Qt5 COMPONENTS Network REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Sql)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Network)
 
 include(FindLibLZMA)
 include(FindBZip2)
@@ -396,12 +396,12 @@ endif()
 # Link libraries.
 if(WIN32)
     if(ENABLE_STATIC_LINK)
-        target_link_libraries(Serious-Runner PUBLIC "-static" Qt${QT_VERSION_MAJOR}::Widgets  Qt5::Sql Qt5::Network LibArchive::LibArchive LibLZMA::LibLZMA BZip2::BZip2 ZLIB::ZLIB)
+        target_link_libraries(Serious-Runner PUBLIC "-static" Qt${QT_VERSION_MAJOR}::Widgets  Qt${QT_VERSION_MAJOR}::Sql Qt${QT_VERSION_MAJOR}::Network LibArchive::LibArchive LibLZMA::LibLZMA BZip2::BZip2 ZLIB::ZLIB)
     else()
-	    target_link_libraries(Serious-Runner PRIVATE Qt${QT_VERSION_MAJOR}::Widgets  Qt5::Sql Qt5::Network LibArchive::LibArchive LibLZMA::LibLZMA BZip2::BZip2 ZLIB::ZLIB)
+            target_link_libraries(Serious-Runner PRIVATE Qt${QT_VERSION_MAJOR}::Widgets  Qt${QT_VERSION_MAJOR}::Sql Qt${QT_VERSION_MAJOR}::Network LibArchive::LibArchive LibLZMA::LibLZMA BZip2::BZip2 ZLIB::ZLIB)
 	endif()
 else()
-    target_link_libraries(Serious-Runner PRIVATE Qt${QT_VERSION_MAJOR}::Widgets  Qt5::Sql Qt5::Network LibArchive::LibArchive LibLZMA::LibLZMA BZip2::BZip2 ZLIB::ZLIB)
+    target_link_libraries(Serious-Runner PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Sql Qt${QT_VERSION_MAJOR}::Network LibArchive::LibArchive LibLZMA::LibLZMA BZip2::BZip2 ZLIB::ZLIB)
 endif()
 
 set_target_properties(Serious-Runner PROPERTIES

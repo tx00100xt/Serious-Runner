@@ -87,6 +87,12 @@ private slots:
     // Slots to update download progress
     void slotOnUpdateProgressBar(qint64 bytesReceived, qint64 bytesTotal);
 
+    // Download from MediaFire
+    void GetDynamicUrlModDataFromMediaFire(QString strUrlMediaFire);
+    void onFinishModDataMediaFire(QNetworkReply *reply);
+    void GetDynamicUrlLevelDataFromMediaFire(QString strUrlMediaFire);
+    void onFinishLevelMediaFire(QNetworkReply *reply);
+
     // ********
     // Ui slots
     // ********
@@ -161,6 +167,8 @@ private slots:
 
     // Themes change
     void on_comboBox_themes_currentIndexChanged(int index);
+    // Downloads Server change
+    void on_comboBox_server_currentIndexChanged(int index);
 
 private:
     // ui
@@ -229,6 +237,8 @@ private:
     bool bUpdateDB                  = false;
     int  iDistoFlag                 = 0;
     int  iTheme                     = 0;
+    int  iServer                    = 0;
+    int  iGameIndex                 = 0;
 
     // Indexes for tables and progress bar
     int iTableRowIndex;
@@ -245,6 +255,9 @@ private:
     int iFE_StartWithDifficulty[4]  = {0,0,0,0};
     int iSE_StartWithDifficulty[5]  = {0,0,0,0,0};
 
+    // MediaFire urls
+    QString strUrlMediaFire[2];
+
     // DB tables for Status scan
     QString strDBTablesForScan[7]   = {"fe_bestmaps", "fe_usersmaps", "fe_mods", "se_bestmaps", "se_hqmaps", "se_usersmaps", "se_mods"};
     // Tables middle Names
@@ -256,7 +269,8 @@ private:
 
     // Download url
     QString strRunnerDBurl          = "https://raw.githubusercontent.com/tx00100xt/Serious-Runner/main/DB/seriousrunner.db";
-    QString strGameSettingsUrl      = "https://archive.org/download/serious-sam-settings/SeriousSamSettings.tar.xz";
+    QString strGameSettingsUrl      = "https://raw.githubusercontent.com/tx00100xt/serioussam-maps/main/Settings/SeriousSamSettings.tar.xz";
+    //QString strGameSettingsUrl    = "https://archive.org/download/serious-sam-settings/SeriousSamSettings.tar.xz";
     //QString strRunnerDBurl        = "https://archive.org/download/seriousrunner/seriousrunner.db";
 
 };

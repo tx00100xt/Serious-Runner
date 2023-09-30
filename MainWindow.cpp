@@ -1,4 +1,4 @@
-﻿#include "MainWindow.h"
+#include "MainWindow.h"
 #include "qnetworkreply.h"
 #include "ui_MainWindow.h"
 #include <QFileDialog>
@@ -164,16 +164,30 @@ void MainWindow::SetVars(){
     // get saved theme
     QString strTheme;
     QString strFileName = strRunnerDirPath +"/Theme.ini";
-    QFile inputFile(strFileName);
-    if (inputFile.open(QIODevice::ReadOnly))
+    QFile inputThemeFile(strFileName);
+    if (inputThemeFile.open(QIODevice::ReadOnly))
     {
-       QTextStream in(&inputFile);
+       QTextStream in(&inputThemeFile);
        while (!in.atEnd())
        {
           strTheme = in.readLine();
        }
-       inputFile.close();
+       inputThemeFile.close();
        iTheme = strTheme.toInt();
+    }
+    // get downloads server
+    QString strServer;
+    strFileName = strRunnerDirPath +"/Server.ini";
+    QFile inputServerFile(strFileName);
+    if (inputServerFile.open(QIODevice::ReadOnly))
+    {
+       QTextStream in(&inputServerFile);
+       while (!in.atEnd())
+       {
+          strServer = in.readLine();
+       }
+       inputServerFile.close();
+       iServer = strServer.toInt();
     }
     // set combo box
     SetComboBoxText();
@@ -244,6 +258,25 @@ void MainWindow::SetComboBoxText()
     ui->comboBox_themes->addItem("NeonButtons");
     ui->comboBox_themes->addItem("Ubuntu");
     ui->comboBox_themes->setCurrentIndex(iTheme);
+
+    // Backup iServer
+    int iBackuoServer = iServer;
+    // Create servers combo box   
+    ui->comboBox_server->clear();
+    ui->comboBox_server->setEditable(true);
+    ui->comboBox_server->lineEdit()->setReadOnly(true);
+    ui->comboBox_server->lineEdit()->setAlignment(Qt::AlignCenter);
+    ui->comboBox_server->lineEdit()->setFont(QFont ("Sans Serif", 12));
+    ui->comboBox_server->setFont(QFont ("Sans Serif", 12));
+    // servers
+    ui->comboBox_server->addItem("WebArchive");
+    ui->comboBox_server->addItem("MediaFire");
+    // Restore iServer
+    iServer = iBackuoServer;
+    ui->comboBox_server->setCurrentIndex(iServer);
+
+    // set server
+    on_comboBox_server_currentIndexChanged(iServer);
     // set theme
     on_comboBox_themes_currentIndexChanged(iTheme);
 }
@@ -1193,17 +1226,20 @@ void MainWindow::DownloadLevel(QString strSqlTable, QString strGameDirPath)
     }
     QSqlQuery qry(db);
     qry.setForwardOnly(true);
-    qry.prepare("Select level_download_link,Status FROM " + strSqlTable + " WHERE level_num = :level_num");
+    qry.prepare("Select level_download_link,level_download_link_github,level_download_link_42adam,level_download_link_mediafire,Status FROM " + strSqlTable + " WHERE level_num = :level_num");
     qry.bindValue(":level_num", iTableRowIndex);
     if (!qry.exec()){
         MsgBox(ERR, "Error: " + qry.lastError().text());
         db.close();
         return;
     }
-    QString strDownloadLink, strStatus;
+    QString strDownloadLink = "", strDownloadLinkGitHub = "", strDownloadLink42adam = "", strDownloadLinkMF = "", strStatus = "";
     while (qry.next()) {
-        strDownloadLink= qry.value(0).toString();
-        strStatus = qry.value(1).toString();
+        strDownloadLink = qry.value(0).toString();
+        strDownloadLinkGitHub = qry.value(1).toString();
+        strDownloadLink42adam = qry.value(2).toString();
+        strDownloadLinkMF = qry.value(3).toString();
+        strStatus = qry.value(4).toString();
     }
     db.close();
 
@@ -1212,7 +1248,16 @@ void MainWindow::DownloadLevel(QString strSqlTable, QString strGameDirPath)
         HideProgressBars();
         return;
     }
-    m_downloader.GetLevel(strGameDirPath, strDownloadLink);
+    if(strDownloadLinkGitHub != ""){
+        m_downloader.GetLevel(strGameDirPath, strDownloadLinkGitHub);
+    } else if(strDownloadLink42adam != ""){
+        m_downloader.GetLevel(strGameDirPath, strDownloadLink42adam);
+    } else if((strDownloadLinkMF != "") && (iServer == 1)){
+        strUrlMediaFire[1] = strGameDirPath;
+        GetDynamicUrlLevelDataFromMediaFire(strDownloadLinkMF);
+    } else {
+        m_downloader.GetLevel(strGameDirPath, strDownloadLink);
+    }
 }
 
 void MainWindow::on_pushButton_fe_bestmaps_download_clicked()
@@ -1261,6 +1306,44 @@ void MainWindow::on_pushButton_se_usersmaps_download_clicked()
 }
 
 // ********************************************************************************************
+// **************************** Get link from Mediafire ***************************************
+// ********************************************************************************************
+
+void MainWindow::GetDynamicUrlLevelDataFromMediaFire(QString strUrlMediaFire)
+{
+    QUrl urlMediaFire(strUrlMediaFire);
+    QNetworkAccessManager *m_naManager = new QNetworkAccessManager(this);
+    connect(m_naManager,&QNetworkAccessManager::finished,this,&MainWindow::onFinishLevelMediaFire);
+    m_naManager->get(QNetworkRequest(urlMediaFire));
+}
+
+// ********************************************************************************************
+// ************************** Download from MediaFire slot ************************************
+// ********************************************************************************************
+
+void MainWindow::onFinishLevelMediaFire(QNetworkReply *reply)
+{
+    // Get Reply
+    QByteArray baReply = reply->readAll();
+    QString strReply(baReply);
+    // Middle crop
+    int  iPos1 = strReply.lastIndexOf("Preparing your download...");
+    int  iPos2 = strReply.lastIndexOf("Your download is starting...");
+    QString strMediaFireUrl = strReply.mid(iPos1, iPos2 - iPos1);
+
+    // Ginal crop
+    iPos1 = strMediaFireUrl.lastIndexOf("http");
+    iPos2 = strMediaFireUrl.lastIndexOf("id=");
+    strMediaFireUrl = strMediaFireUrl.mid(iPos1, iPos2 - iPos1 );
+    iPos1 = strMediaFireUrl.lastIndexOf('"');
+    strMediaFireUrl = strMediaFireUrl.mid(0, iPos1 );
+
+    // Download
+    reply->deleteLater();
+    m_downloader.GetLevel(strUrlMediaFire[1] , strMediaFireUrl);
+}
+
+// ********************************************************************************************
 // ******************************* Mods Download slots ****************************************
 // ********************************************************************************************
 
@@ -1305,18 +1388,19 @@ void MainWindow::DownloadMod(QString strSqlTable)
     }
     QSqlQuery qry(db);
     qry.setForwardOnly(true);
-    qry.prepare("Select " + strSqlUrlBin + ",mod_download_link_data,Status FROM " + strSqlTable + " WHERE mod_num = :mod_num");
+    qry.prepare("Select " + strSqlUrlBin + ",mod_download_link_data,mod_download_link_data_mediafire,Status FROM " + strSqlTable + " WHERE mod_num = :mod_num");
     qry.bindValue(":mod_num", iTableRowIndex);
     if (!qry.exec()){
         MsgBox(ERR, "Error: " + qry.lastError().text());
         db.close();
         return;
     }
-    QString strDownloadLinkBin, strDownloadLinkData, strStatus;
+    QString strDownloadLinkBin, strDownloadLinkData, strDownloadLinkDataMediaFire, strStatus;
     while (qry.next()) {
         strDownloadLinkBin = qry.value(0).toString();
         strDownloadLinkData = qry.value(1).toString();
-        strStatus = qry.value(2).toString();
+        strDownloadLinkDataMediaFire = qry.value(2).toString();
+        strStatus = qry.value(3).toString();
     }
     db.close();
 
@@ -1325,10 +1409,22 @@ void MainWindow::DownloadMod(QString strSqlTable)
         HideProgressBars();
         return;
     }
+
+    strUrlMediaFire[0] = strDownloadLinkBin ;
     if(strSqlTable.contains("fe")){
-        m_downloader.GetMod( strRunnerDirPath, "/SamTFE", strDownloadLinkBin, strDownloadLinkData);
+        iGameIndex = 0;
+        if(iServer == 0) {
+            m_downloader.GetMod( strRunnerDirPath, "/SamTFE", strDownloadLinkBin, strDownloadLinkData);
+        } else {
+            GetDynamicUrlModDataFromMediaFire(strDownloadLinkDataMediaFire);
+        }
     } else {
-        m_downloader.GetMod( strRunnerDirPath, "/SamTSE", strDownloadLinkBin, strDownloadLinkData);
+        iGameIndex = 1;
+        if(iServer == 0) {
+            m_downloader.GetMod( strRunnerDirPath, "/SamTSE", strDownloadLinkBin, strDownloadLinkData);
+        } else {
+            GetDynamicUrlModDataFromMediaFire(strDownloadLinkDataMediaFire);
+        }
     }
 
 }
@@ -1353,6 +1449,50 @@ void MainWindow::on_pushButton_se_mods_download_clicked()
     ui->progressBar_se_mods_download->setValue(0);
     ui->progressBar_se_mods_download->show();
     DownloadMod("se_mods");
+}
+
+// ********************************************************************************************
+// **************************** Get link from Mediafire ***************************************
+// ********************************************************************************************
+
+void MainWindow::GetDynamicUrlModDataFromMediaFire(QString strUrlMediaFire)
+{
+    QUrl urlMediaFire(strUrlMediaFire);
+    QNetworkAccessManager *m_naManager = new QNetworkAccessManager(this);
+    connect(m_naManager,&QNetworkAccessManager::finished,this,&MainWindow::onFinishModDataMediaFire);
+    m_naManager->get(QNetworkRequest(urlMediaFire));
+
+}
+
+// ********************************************************************************************
+// ************************** Download from MediaFire slot ************************************
+// ********************************************************************************************
+
+void MainWindow::onFinishModDataMediaFire(QNetworkReply *reply)
+{
+    // Get Reply
+    QByteArray baReply = reply->readAll();
+    QString strReply(baReply);
+    // Middle crop
+    int  iPos1 = strReply.lastIndexOf("Preparing your download...");
+    int  iPos2 = strReply.lastIndexOf("Your download is starting...");
+    QString strMediaFireUrl = strReply.mid(iPos1, iPos2 - iPos1);
+
+    // Ginal crop
+    iPos1 = strMediaFireUrl.lastIndexOf("http");
+    iPos2 = strMediaFireUrl.lastIndexOf("id=");
+    strMediaFireUrl = strMediaFireUrl.mid(iPos1, iPos2 - iPos1 );
+    iPos1 = strMediaFireUrl.lastIndexOf('"');
+    strMediaFireUrl = strMediaFireUrl.mid(0, iPos1 );
+
+    // Download
+    reply->deleteLater();
+    if(iGameIndex == 0 ){
+        m_downloader.GetMod( strRunnerDirPath, "/SamTFE", strUrlMediaFire[0], strMediaFireUrl);
+    } else {
+        m_downloader.GetMod( strRunnerDirPath, "/SamTSE", strUrlMediaFire[0], strMediaFireUrl);
+
+    }
 }
 
 // ********************************************************************************************
@@ -1520,7 +1660,7 @@ void MainWindow::on_checkBox_se_usersmaps_use_xplus_stateChanged(int arg)
 }
 
 // ********************************************************************************************
-// *********************************** Add user map slot **************************************
+// ******************************* Themes combo box slot **************************************
 // ********************************************************************************************
 void MainWindow::on_comboBox_themes_currentIndexChanged(int index)
 {
@@ -1577,6 +1717,22 @@ void MainWindow::on_comboBox_themes_currentIndexChanged(int index)
         stream << QString::number(index) << Qt::endl;
     }
     file.close();
+}
+
+// ********************************************************************************************
+// *************************** Downloads server combo box slot ********************************
+// ********************************************************************************************
+void MainWindow::on_comboBox_server_currentIndexChanged(int index)
+{
+    // set server
+    QString filename = strRunnerDirPath + "/Server.ini";
+    QFile file(filename);
+    if (file.open(QIODevice::ReadWrite)) {
+        QTextStream stream(&file);
+        stream << QString::number(index) << Qt::endl;
+    }
+    file.close();
+    iServer = index;
 }
 
 /*
@@ -1643,4 +1799,5 @@ QString MainWindow::exec(const char* cmd)
 // ********************************************************************************************
 // ************************************** The End *********************************************
 // ********************************************************************************************
+
 

@@ -3645,6 +3645,47 @@ p, li { white-space: pre-wrap; }
        <string>Choose Theme:</string>
       </property>
      </widget>
+     <widget class="QComboBox" name="comboBox_server">
+      <property name="geometry">
+       <rect>
+        <x>840</x>
+        <y>620</y>
+        <width>160</width>
+        <height>40</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="currentText">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_server">
+      <property name="geometry">
+       <rect>
+        <x>860</x>
+        <y>590</y>
+        <width>150</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Sans Serif</family>
+        <pointsize>12</pointsize>
+        <underline>false</underline>
+       </font>
+      </property>
+      <property name="text">
+       <string>Choose Server:</string>
+      </property>
+     </widget>
     </widget>
    </widget>
   </widget>
