@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(Serious-Runner VERSION 1.1)
+project(Serious-Runner VERSION 1.1.1)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
