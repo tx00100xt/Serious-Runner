@@ -149,16 +149,16 @@ You can download the finished [release] for Linux, Alpine Linux(musl), FreeBSD a
 Just unpack the archive in any location convenient for you in your home directory. The only condition is the presence of game data for the games Serious Sam Classic The First Encounter and Serious Sam Classic The Second in the home directory, the program will do the rest itself.
 
 ### Ubuntu Users
-For those using Ubuntu, you can use the installation from the PPA by adding **ppa:tx00100xt/serioussamclassic** to your system's Software Sources.
+For those using Ubuntu, you can use the installation from the PPA by adding **ppa:tx00100xt/serioussam** to your system's Software Sources.
 ```
-sudo add-apt-repository ppa:tx00100xt/serioussamclassic
+sudo add-apt-repository ppa:tx00100xt/serioussam
 sudo apt update
 sudo apt install seriousrunner
 ```
 This PPA can be added to your system manually by copying the lines below and adding them to your system's software sources.
 ```
-deb https://ppa.launchpadcontent.net/tx00100xt/serioussamclassic/ubuntu version main 
-deb-src https://ppa.launchpadcontent.net/tx00100xt/serioussamclassic/ubuntu version main  
+deb https://ppa.launchpadcontent.net/tx00100xt/serioussam/ubuntu version main 
+deb-src https://ppa.launchpadcontent.net/tx00100xt/serioussam/ubuntu version main  
 ```
 Where version: jammy, lunar, mantic. 
 
