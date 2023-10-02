@@ -137,7 +137,7 @@ void MainWindow::SetVars(){
     // Set pathd
 #ifdef PLATFORM_UNIX
     strEngineDirPath     = strHomeDirPath + strEngineDirPathSuffix;
-    //strExecDirPath       = QCoreApplication::applicationFilePath();
+    strExecDirPath       = QCoreApplication::applicationFilePath();
 #endif
     strExecDirPath       = QDir::currentPath();
     strRunnerDirPath     = strHomeDirPath + strRunnerDirPathSuffix;
