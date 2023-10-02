@@ -138,8 +138,9 @@ void MainWindow::SetVars(){
 #ifdef PLATFORM_UNIX
     strEngineDirPath     = strHomeDirPath + strEngineDirPathSuffix;
     strExecDirPath       = QCoreApplication::applicationFilePath();
-#endif
+#else
     strExecDirPath       = QDir::currentPath();
+#endif    
     strRunnerDirPath     = strHomeDirPath + strRunnerDirPathSuffix;
     strGameDirFEpath     = strRunnerDirPath + "/SamTFE";
     strGameDirSEpath     = strRunnerDirPath + "/SamTSE";
