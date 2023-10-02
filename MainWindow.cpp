@@ -140,7 +140,7 @@ void MainWindow::SetVars(){
     strExecDirPath       = QCoreApplication::applicationFilePath();
 #else
     strExecDirPath       = QDir::currentPath();
-#endif    
+#endif
     strRunnerDirPath     = strHomeDirPath + strRunnerDirPathSuffix;
     strGameDirFEpath     = strRunnerDirPath + "/SamTFE";
     strGameDirSEpath     = strRunnerDirPath + "/SamTSE";
@@ -283,7 +283,7 @@ void MainWindow::SetComboBoxText()
 }
 
 // Test DB update need?
-bool MainWindow::TestDBupdateNeed()
+int MainWindow::TestDBupdateNeed()
 {
     int iLocalDBsize = 0;
     QFile scanFile(strRunnerDBPath);
@@ -291,14 +291,16 @@ bool MainWindow::TestDBupdateNeed()
         iLocalDBsize = scanFile.size();
         scanFile.close();
     }
-    if(iLocalDBsize == iRemoteSizeDB){
-        return true;
-    }
-    return false;
+    return iLocalDBsize;
 }
 
 // Search and install DB
 bool MainWindow::SearchDB(){
+
+    if (QFile(strRunnerDBPath).exists() && !TestDBupdateNeed()){
+       QFile file(strRunnerDBPath);
+       file.remove();
+    }
     if (!QFile(strRunnerDBPath).exists()){
         if (!QDir(strRunnerDirPath).exists()){
             QDir().mkdir(strRunnerDirPath);
@@ -783,7 +785,8 @@ void MainWindow::on_pushButton_install_gamedata_clicked()
 
 void MainWindow::on_pushButton_update_db_clicked()
 {
-    if(TestDBupdateNeed()) {
+    int iLocalDBsize = TestDBupdateNeed();
+    if((iLocalDBsize == iRemoteSizeDB) && (iLocalDBsize !=0 )) {
         MsgBox(INFO, "The latest version of the database is installed. No update required!");
         return;
     }
@@ -1260,7 +1263,6 @@ void MainWindow::DownloadLevel(QString strSqlTable, QString strGameDirPath)
         m_downloader.GetLevel(strGameDirPath, strDownloadLink);
     }
 }
-
 void MainWindow::on_pushButton_fe_bestmaps_download_clicked()
 {
     if(m_downloader.locked_action) {return;}

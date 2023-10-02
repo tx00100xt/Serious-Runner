@@ -184,7 +184,7 @@ private:
     void  ReScanLocalDB();
     void  HideProgressBars();
     void  HideLabelsText();
-    bool  TestDBupdateNeed();
+    int   TestDBupdateNeed();
     void  MakeDifficultyScript(int iDifficulty, QString strPath);
     void  StartLevel(QString strSqlTable, int iXPLUS, int iDifficulty);
     void  StartMod(QString strSqlTable, int iDifficulty);
