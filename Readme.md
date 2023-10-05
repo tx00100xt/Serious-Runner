@@ -2,6 +2,7 @@
 [![Build status](https://github.com/tx00100xt/Serious-Runner/actions/workflows/cibuild.yml/badge.svg)](https://github.com/tx00100xt/Serious-Runner/actions/)
 [![License: GPL v2](https://img.shields.io/badge/License-GPL_v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/tx00100xt/Serious-Runner)](https://github.com/tx00100xt/Serious-Runner/releases/tag/v1.1.1)
+[![Github downloads](https://img.shields.io/github/downloads/tx00100xt/Serious-Runner/total.svg?logo=github&logoColor=white&style=flat-square&color=E75776)](https://github.com/tx00100xt/Serious-Runner/releases/)
 
 Serious Runner а small program that loads and runs content created by users for the game Serious Sam Classic.
 
@@ -37,24 +38,42 @@ After clicking the button Search and install game data, the program will find it
 
 Dependencies
 ------------
-
-* `libQt5Gui, libQt5Core, libQt5Widgets, libQt5Sql, libQt5Network`
-* `cmake >=3.14, glibc >=2.24, zlib, bzip2, libarchive, liblzma`
+* `With using Qt5:`
+```
+libQt5Gui, libQt5Core, libQt5Widgets, libQt5Sql, libQt5Network
+```
+* `With using Qt6:`
+```
+libQt6Gui, libQt6Core, libQt6Widgets, libQt6Sql, libQt6Network
+```
+* `Basic Dependencies:`
+```
+cmake >=3.14, glibc >=2.24, zlib, bzip2, libarchive, liblzma
+```
 
 For example, to build from Ubuntu/Debian, run the commands:
+* `With using Qt5`
 ```
 sudo apt update
 sudo apt install build-essential cmake qtbase5-dev libarchive-dev liblzma-dev libbz2-dev zlib1g-dev
 ```
-For build from ALT Linux:
+* `With using Qt6`
+```
+sudo apt update
+sudo apt install build-essential cmake qtbase6-dev libarchive-dev liblzma-dev libbz2-dev zlib1g-dev
+```
+For build and run from ALT Linux:
+* `With using Qt5`
 ```
 sudo apt-get update
 sudo apt-get install qt5-base-devel libarchive-devel liblzma-devel bzip2-devel zlib-devel
+sudo apt-get install qt5-base-common libarchive liblzma bzip2 zlib
 ```
-For run from ALT Linux:
+* `With using Qt6`
 ```
 sudo apt-get update
-sudo apt-get install qt5-base-common libarchive liblzma bzip2 zlib
+sudo apt-get install qt6-base-devel libarchive-devel liblzma-devel bzip2-devel zlib-devel
+sudo apt-get install qt6-base-common libarchive liblzma bzip2 zlib
 ```
 
 Building
@@ -83,7 +102,7 @@ exit
 
 Building for Windows
 --------------------
-It is assumed that you have a deployed development environment that includes **Qt5, MinGW-w64, CMake, OpenSSL** 64-bit.
+It is assumed that you have a deployed development environment that includes **Qt5** or **Qt6**, **MinGW-w64, CMake, OpenSSL** 64-bit.
 You can find documentation on the deployment of this environment on the Internet. Using this environment you need to build the following libraries from source code:
 
 - zlib
@@ -116,14 +135,13 @@ mkdir build && cd build
 cmake -G "MinGW Makefiles" ..
 mingw32-make
 ```
-After receiving the original executable file, add the necessary libraries and plugins to the program directory.
-**See file [TREE]**
+After receiving the original executable file, add the necessary libraries and plugins to the program directory. **See file [TREE]**.
 
 To create a program installer, use the commands:
 ```
 cd Serious-Runner
 cd Install
-binarycreator.exe  -f -v -c "config/config.xml" -p "packages" "Serious-Runner-1.1-win64-Installer.exe"
+binarycreator.exe  -f -v -c "config/config.xml" -p "packages" "Serious-Runner-1.1.1-win64-Installer.exe"
 ```
 **Note:**
 - You must have it installed Qt Installer Framework
