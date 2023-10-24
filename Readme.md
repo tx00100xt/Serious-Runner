@@ -1,7 +1,7 @@
 ## Serious Runner
 [![Build status](https://github.com/tx00100xt/Serious-Runner/actions/workflows/cibuild.yml/badge.svg)](https://github.com/tx00100xt/Serious-Runner/actions/)
 [![License: GPL v2](https://img.shields.io/badge/License-GPL_v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/tx00100xt/Serious-Runner)](https://github.com/tx00100xt/Serious-Runner/releases/tag/v1.1.1)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/tx00100xt/Serious-Runner)](https://github.com/tx00100xt/Serious-Runner/releases/tag/v1.1.2)
 [![Github downloads](https://img.shields.io/github/downloads/tx00100xt/Serious-Runner/total.svg?logo=github&logoColor=white&style=flat-square&color=E75776)](https://github.com/tx00100xt/Serious-Runner/releases/)
 
 Serious Runner а small program that loads and runs content created by users for the game Serious Sam Classic.
